@@ -14,6 +14,7 @@ from nftsniper.contexts.alerts.domain.candidate import (
     Subscriber,
 )
 from nftsniper.contexts.alerts.domain.events import AlertSent, DecisionRecorded
+from nftsniper.contexts.alerts.domain.outcome import Outcome, OutcomeWindow
 
 __all__ = [
     "Alert",
@@ -26,5 +27,7 @@ __all__ = [
     "DecisionAction",
     "DecisionRecorded",
     "ListingScore",
+    "Outcome",
+    "OutcomeWindow",
     "Subscriber",
 ]

@@ -164,7 +164,7 @@ nft-sniper/
 | 8 | Risk & Anti-Scam (wash trading по графу кошельков, клоны/unicode-подмены, коллекции без объёма, битые метаданные/медиа, fake-продажи, аукцион vs fixed, роялти+комиссия в net exit; `ScreenListing` → `RiskScore`) | ✅ |
 | 9 | Alert Engine (матчинг с настройками, дедуп, rate limit, quiet hours, приоритизация «лучшие сделки первыми», ограниченная очередь при всплеске; `AlertEngine` + `RecordDecision`) | ✅ |
 | 10 | Telegram Bot (aiogram 3): /start /settings (FSM) /watchlist /stats /mute /pause, рендер алерта по ТЗ §1, кнопки-решения, локализация RU/EN, TelegramNotifier | ✅ |
-| 11 | Feedback Loop & Analytics | ⬜ |
+| 11 | Feedback Loop & Analytics (трекинг исходов 1h/24h/7d, precision/take rate/hit rate, контрфактуал «если бы взяли всё», персональная рекомендация порога min_discount) | ✅ |
 | 12 | Observability & Backtest | ⬜ |
 
 **Фазы** (ТЗ §8): 1) MVP — 1,2,3,6,10 + упрощённая оценка; 2) качество — 4,7,8;

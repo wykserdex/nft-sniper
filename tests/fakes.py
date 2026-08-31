@@ -13,6 +13,7 @@ from decimal import Decimal
 
 from nftsniper.contexts.alerts.domain.alert import Alert, AlertMessage, Decision
 from nftsniper.contexts.alerts.domain.candidate import Subscriber
+from nftsniper.contexts.alerts.domain.outcome import Outcome
 from nftsniper.contexts.sources.domain.chain import NftTransfer, SaleVerification, WalletInfo
 from nftsniper.contexts.sources.domain.collection import Collection
 from nftsniper.contexts.sources.domain.fragment import FragmentAsset, FragmentAuction
@@ -368,6 +369,9 @@ class InMemoryAlertRepository:
     async def get(self, alert_id: str) -> Alert | None:
         return self._data.get(alert_id)
 
+    async def list_by_user(self, user_id: str) -> Sequence[Alert]:
+        return [alert for alert in self._data.values() if alert.user_id == user_id]
+
     async def find_recent_by_dedup(
         self, user_id: str, dedup_key: str, since_ts: datetime
     ) -> Alert | None:
@@ -416,7 +420,7 @@ class FakeSubscriberDirectory:
 
 
 class InMemoryDecisionRepository:
-    """DecisionRepository (alerts) в памяти: save/list_by_alert."""
+    """DecisionRepository (alerts) в памяти: save/list_by_alert/list_by_user."""
 
     def __init__(self) -> None:
         self._data: list[Decision] = []
@@ -426,3 +430,25 @@ class InMemoryDecisionRepository:
 
     async def list_by_alert(self, alert_id: str) -> list[Decision]:
         return [decision for decision in self._data if decision.alert_id == alert_id]
+
+    async def list_by_user(self, user_id: str) -> list[Decision]:
+        return [decision for decision in self._data if decision.user_id == user_id]
+
+
+class InMemoryOutcomeRepository:
+    """OutcomeRepository в памяти: save/get_by_alert/list_by_user."""
+
+    def __init__(self) -> None:
+        self._data: dict[str, Outcome] = {}
+
+    async def save(self, outcome: Outcome) -> None:
+        self._data[outcome.id] = outcome
+
+    async def get_by_alert(self, alert_id: str) -> Outcome | None:
+        for outcome in self._data.values():
+            if outcome.alert_id == alert_id:
+                return outcome
+        return None
+
+    async def list_by_user(self, user_id: str) -> Sequence[Outcome]:
+        return [outcome for outcome in self._data.values() if outcome.user_id == user_id]

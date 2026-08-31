@@ -49,9 +49,34 @@ quiet hours, приоритизация (сначала лучшие сделк�
 отправленных), всплеск 1000 листингов → отправляется ровно бюджет, лучшие
 сделки уходят первыми.
 
+## Что готово (— Feedback Loop & Analytics)
+
+- **Домен** (`domain/outcome.py`): `Outcome` — исход алерта (таблица
+  `outcomes`, ТЗ §5): цены по окнам 1h/24h/7d, факт продажи, база для
+  precision. Методы: `apply_snapshot` (окно), `mark_sold`, `final_price`
+  (продажа > 24h > 7d > 1h > цена алерта), `confirmed_24h` (fair подтвердился
+  ± tolerance), `is_winning` (цена выросла). `OutcomeWindow` = 1h/24h/7d.
+- **Порты**: `OutcomeRepository` (save/get_by_alert/list_by_user);
+  `AlertRepository.list_by_user`, `DecisionRepository.list_by_user`.
+- **Application**:
+  - `outcome_tracking.py` — `TrackOutcome`: фиксирует состояние листинга в
+    окне или продажу; первый снимок создаёт Outcome.
+  - `analytics.py` — чистые функции + use case `AlertAnalytics`:
+    - `compute_quality` → `QualityReport`: precision (доля алертов, где fair
+      подтвердился), take rate (доля «Взять»), hit rate (цена выросла),
+      средний дискаунт;
+    - `compute_counterfactual` → `CounterfactualReport`: «что было бы, если
+      бы вы взяли все алерты» — потрачено/стоимость/PnL/упущенное;
+    - `recommend_threshold` → `ThresholdRecommendation`: персональная
+      рекомендация `min_discount` — наименьший порог, где precision ≥ цели
+      при достаточной выборке; фолбэк — порог с максимальной precision;
+      без данных — текущий порог.
+- **Критерий готовности ТЗ §7**: качество видно в цифрах и есть рекомендация
+  порога для конкретного пользователя (`tests/unit/test_analytics.py`).
+
 ## Дальше
 
-- запись решений в Postgres и калибровка порогов;
 - Postgres/Redis-реализации репозиториев и SubscriberDirectory;
-- воркер notifier (entrypoints/workers): PollListings → ScoreListing →
-  risk screening → AlertEngine.deliver_batch.
+- воркеры (entrypoints/workers): poller → valuator (риск-скрининг) →
+  notifier (AlertEngine.deliver_batch) → outcome-tracker (TrackOutcome);
+- `/stats` бота может переехать на `AlertAnalytics` (пока — InMemoryDecisionStore).

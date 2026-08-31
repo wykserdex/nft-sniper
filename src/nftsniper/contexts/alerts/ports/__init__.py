@@ -1,8 +1,9 @@
 """Порты контекста alerts: NotifierPort, репозитории, каталог подписчиков.
 
 Алерт-движок зависит только от этих протоколов: доставка
-(NotifierPort), хранение алертов и решений (репозитории), список
-подписчиков с настройками (SubscriberDirectory).
+(NotifierPort), хранение алертов, решений и исходов (репозитории), список
+подписчиков с настройками (SubscriberDirectory). Аналитика читает
+те же репозитории: alerts/outcomes/decisions по пользователю.
 """
 
 from collections.abc import Sequence
@@ -11,6 +12,7 @@ from typing import Protocol
 
 from nftsniper.contexts.alerts.domain.alert import Alert, AlertMessage, Decision
 from nftsniper.contexts.alerts.domain.candidate import Subscriber
+from nftsniper.contexts.alerts.domain.outcome import Outcome
 
 
 class NotifierPort(Protocol):
@@ -30,6 +32,10 @@ class AlertRepository(Protocol):
 
     async def get(self, alert_id: str) -> Alert | None: ...
 
+    async def list_by_user(self, user_id: str) -> Sequence[Alert]:
+        """Все алерты пользователя (для аналитики)."""
+        ...
+
     async def find_recent_by_dedup(
         self, user_id: str, dedup_key: str, since_ts: datetime
     ) -> Alert | None:
@@ -45,6 +51,20 @@ class DecisionRepository(Protocol):
     async def save(self, decision: Decision) -> None: ...
 
     async def list_by_alert(self, alert_id: str) -> list[Decision]: ...
+
+    async def list_by_user(self, user_id: str) -> list[Decision]:
+        """Все решения пользователя (для аналитики)."""
+        ...
+
+
+class OutcomeRepository(Protocol):
+    """Исходы алертов (таблица ``outcomes``, ТЗ §5;)."""
+
+    async def save(self, outcome: Outcome) -> None: ...
+
+    async def get_by_alert(self, alert_id: str) -> Outcome | None: ...
+
+    async def list_by_user(self, user_id: str) -> Sequence[Outcome]: ...
 
 
 class SubscriberDirectory(Protocol):
