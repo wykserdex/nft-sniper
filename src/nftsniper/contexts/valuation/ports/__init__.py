@@ -1,0 +1,1 @@
+"""Порты: PriceModelPort, FeatureStorePort."""

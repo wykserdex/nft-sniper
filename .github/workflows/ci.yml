@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NFT_POSTGRES_DSN: postgresql+asyncpg://nft_sniper:nft_sniper@localhost:5432/nft_sniper
+  NFT_REDIS_URL: redis://localhost:6379/0
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - name: Ruff format
+        run: ruff format --check src tests scripts
+      - name: Ruff check
+        run: ruff check src tests scripts
+      - name: Mypy strict
+        run: mypy
+      - name: No-float gate
+        run: python scripts/no_float.py
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: pytest tests/unit -v
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: nft_sniper
+          POSTGRES_PASSWORD: nft_sniper
+          POSTGRES_DB: nft_sniper
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U nft_sniper -d nft_sniper"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - name: Alembic upgrade head
+        run: alembic upgrade head
+      - run: pytest tests/integration -v
