@@ -82,10 +82,12 @@ def _require_db() -> None:
 @pytest.fixture
 async def sessions() -> AsyncIterator[async_sessionmaker[AsyncSession]]:
     engine = create_database(_settings())
-    command.upgrade(Config("alembic.ini"), "head")
+    # env.py мигрирует через asyncio.run() — зовём его из потока, чтобы не
+    # столкнуться с уже запущенным лупом pytest-asyncio.
+    await asyncio.to_thread(command.upgrade, Config("alembic.ini"), "head")
     factory = create_session_factory(engine)
     yield factory
-    command.downgrade(Config("alembic.ini"), "base")
+    await asyncio.to_thread(command.downgrade, Config("alembic.ini"), "base")
     await engine.dispose()
 
 
