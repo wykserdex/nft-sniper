@@ -15,6 +15,10 @@ class UserSettingsStore(Protocol):
 
     async def save(self, settings: UserSettings) -> None: ...
 
+    async def list_users(self) -> tuple[str, ...]:
+        """Все user_id с сохранёнными настройками (для матчинга)."""
+        ...
+
 
 class WatchlistStore(Protocol):
     """Вотчлист: user_id → адреса предметов."""

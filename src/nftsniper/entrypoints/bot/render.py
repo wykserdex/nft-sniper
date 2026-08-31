@@ -12,6 +12,7 @@ from datetime import UTC, datetime
 from decimal import ROUND_HALF_UP, Decimal
 
 from nftsniper.contexts.alerts.domain.alert import AlertButton, AlertMessage
+from nftsniper.contexts.alerts.domain.candidate import AlertCandidate
 from nftsniper.entrypoints.bot.i18n import _Strings, get_strings
 from nftsniper.shared.money import TONAmount
 
@@ -188,3 +189,34 @@ def listing_age_seconds(listed_at: datetime, now: datetime | None = None) -> int
     delta = effective_now - listed_at
     total = delta.days * _SECONDS_PER_DAY + delta.seconds
     return max(0, total)
+
+
+def candidate_to_view(candidate: AlertCandidate) -> AlertView:
+    """AlertCandidate (алерт-движок) → AlertView (рендер алерта)."""
+    return AlertView(
+        alert_id=candidate.alert_id,
+        listing_id=candidate.listing_id,
+        item_id=candidate.item_id,
+        item_name=candidate.item_name,
+        collection_id=candidate.collection_id,
+        collection_name=candidate.collection_name,
+        price=candidate.price,
+        fair_price=candidate.fair_price,
+        discount=candidate.discount,
+        confidence=candidate.confidence,
+        floor_p5=candidate.floor_p5,
+        median_7d=candidate.median_7d,
+        sales_7d=candidate.sales_7d,
+        floor_24h_change=candidate.floor_24h_change,
+        liquidity_spd=candidate.liquidity_spd,
+        listing_age_seconds=candidate.listing_age_seconds,
+        rarity_rank=candidate.rarity_rank,
+        risk_flags=candidate.risk_flags,
+        price_usd=None,
+        getgems_url=candidate.getgems_url,
+    )
+
+
+def render_candidate(candidate: AlertCandidate) -> AlertMessage:
+    """Отрисовать кандидата алерта (текст + кнопки) — рендер движка."""
+    return render_alert(candidate_to_view(candidate), candidate.language)

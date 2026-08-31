@@ -162,7 +162,7 @@ nft-sniper/
 | 6 | Statistics Engine (price_stats): floor P5, медиана с затуханием, объёмы, sales_per_day, liquidity, momentum 24h/7d; пересчёт `RebuildStats`; perf SLA на 10k предметов | ✅ |
 | 7 | Valuation Engine (ансамбль floor/comps/trait/momentum, confidence + интервал P25/P75, версия модели, объяснение, бэктест медианной ошибки) | ✅ |
 | 8 | Risk & Anti-Scam (wash trading по графу кошельков, клоны/unicode-подмены, коллекции без объёма, битые метаданные/медиа, fake-продажи, аукцион vs fixed, роялти+комиссия в net exit; `ScreenListing` → `RiskScore`) | ✅ |
-| 9 | Alert Engine | ⬜ |
+| 9 | Alert Engine (матчинг с настройками, дедуп, rate limit, quiet hours, приоритизация «лучшие сделки первыми», ограниченная очередь при всплеске; `AlertEngine` + `RecordDecision`) | ✅ |
 | 10 | Telegram Bot (aiogram 3): /start /settings (FSM) /watchlist /stats /mute /pause, рендер алерта по ТЗ §1, кнопки-решения, локализация RU/EN, TelegramNotifier | ✅ |
 | 11 | Feedback Loop & Analytics | ⬜ |
 | 12 | Observability & Backtest | ⬜ |

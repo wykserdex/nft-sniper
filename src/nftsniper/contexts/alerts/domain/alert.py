@@ -10,6 +10,10 @@ from nftsniper.contexts.valuation.domain.discount import Discount
 from nftsniper.shared.domain.base import Entity, ValueObject
 from nftsniper.shared.money import TONAmount
 
+# Границы часа суток для quiet_hours (ТЗ §5).
+_MIN_QUIET_HOUR = 0
+_MAX_QUIET_HOUR = 23
+
 
 class DecisionAction:
     TAKEN = "taken"
@@ -106,6 +110,7 @@ class AlertPolicy(ValueObject):
     max_risk: Decimal  # 0..1
     dedup_window: timedelta = timedelta(hours=6)
     max_alerts_per_hour: int = 20
+    quiet_hours: tuple[tuple[int, int], ...] = ()  # окна тишины (часы UTC), ТЗ §5
 
     def __post_init__(self) -> None:
         if self.min_discount < 0:
@@ -123,6 +128,30 @@ class AlertPolicy(ValueObject):
         if not (Decimal(0) <= self.max_risk <= Decimal(1)):
             msg = "max_risk должен быть в [0, 1]"
             raise ValueError(msg)
+        for start, end in self.quiet_hours:
+            if not (
+                _MIN_QUIET_HOUR <= start <= _MAX_QUIET_HOUR
+                and _MIN_QUIET_HOUR <= end <= _MAX_QUIET_HOUR
+            ):
+                msg = f"quiet_hours: часы должны быть в [0, 23], получено ({start}, {end})"
+                raise ValueError(msg)
+            if start == end:
+                msg = "quiet_hours: начало и конец окна не могут совпадать"
+                raise ValueError(msg)
+
+    def is_quiet(self, now: datetime) -> bool:
+        """Попал ли ``now`` в тихое время (часы — UTC, ТЗ §5).
+
+        Окно может пересекать полночь: ``(22, 6)`` = 22:00–06:00.
+        Локальный часовой пояс пользователя не учитывается (MVP: UTC).
+        """
+        hour = now.hour
+        for start, end in self.quiet_hours:
+            if start < end and start <= hour < end:
+                return True
+            if start > end and (hour >= start or hour < end):
+                return True
+        return False
 
     def allows(
         self,

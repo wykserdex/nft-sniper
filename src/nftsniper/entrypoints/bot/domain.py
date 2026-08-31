@@ -32,6 +32,10 @@ _DEFAULT_MAX_ALERTS_PER_HOUR = 20
 _PRICE_MIN_TON = TONAmount.from_ton(_DEFAULT_PRICE_MIN)
 _PRICE_MAX_TON = TONAmount.from_ton(_DEFAULT_PRICE_MAX)
 
+# Границы часа суток для quiet_hours.
+_MIN_QUIET_HOUR = 0
+_MAX_QUIET_HOUR = 23
+
 
 @dataclass(frozen=True, slots=True)
 class UserSettings(ValueObject):
@@ -46,6 +50,7 @@ class UserSettings(ValueObject):
     min_liquidity: Decimal = _DEFAULT_MIN_LIQUIDITY  # 0..1
     max_risk: Decimal = _DEFAULT_MAX_RISK  # 0..1
     max_alerts_per_hour: int = _DEFAULT_MAX_ALERTS_PER_HOUR
+    quiet_hours: tuple[tuple[int, int], ...] = ()  # окна тишины (часы UTC)
     paused: bool = False
     muted_collections: tuple[str, ...] = ()
 
@@ -68,6 +73,16 @@ class UserSettings(ValueObject):
         if self.max_alerts_per_hour < 1:
             msg = "max_alerts_per_hour должен быть >= 1"
             raise SettingsValidationError(msg)
+        for start, end in self.quiet_hours:
+            if (
+                not (
+                    _MIN_QUIET_HOUR <= start <= _MAX_QUIET_HOUR
+                    and _MIN_QUIET_HOUR <= end <= _MAX_QUIET_HOUR
+                )
+                or start == end
+            ):
+                msg = f"quiet_hours: некорректное окно ({start}, {end})"
+                raise SettingsValidationError(msg)
         if self.language not in ("ru", "en"):
             msg = f"язык должен быть ru/en, получено {self.language!r}"
             raise SettingsValidationError(msg)
@@ -91,6 +106,7 @@ class UserSettings(ValueObject):
             min_liquidity=self.min_liquidity,
             max_risk=self.max_risk,
             max_alerts_per_hour=self.max_alerts_per_hour,
+            quiet_hours=self.quiet_hours,
         )
 
     def is_muted(self, collection_id: str) -> bool:

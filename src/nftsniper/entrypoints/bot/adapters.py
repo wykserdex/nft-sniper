@@ -8,8 +8,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from nftsniper.contexts.alerts.domain.alert import Decision
+from nftsniper.contexts.alerts.domain.candidate import Subscriber
 from nftsniper.entrypoints.bot.domain import UserSettings
+from nftsniper.entrypoints.bot.ports import UserSettingsStore
 
 
 class InMemoryUserSettingsStore:
@@ -21,6 +25,36 @@ class InMemoryUserSettingsStore:
 
     async def save(self, settings: UserSettings) -> None:
         self._data[settings.user_id] = settings
+
+    async def list_users(self) -> tuple[str, ...]:
+        return tuple(self._data.keys())
+
+
+class SubscriberDirectoryFromSettings:
+    """Мостик UserSettingsStore → SubscriberDirectory.
+
+    Notifier-воркер строит AlertEngine на этом адаптере: настройки бота
+    (UserSettings) конвертируются в Subscriber + AlertPolicy для матчинга.
+    """
+
+    def __init__(self, store: UserSettingsStore) -> None:
+        self._store = store
+
+    async def list_subscribers(self) -> Sequence[Subscriber]:
+        subscribers: list[Subscriber] = []
+        for user_id in await self._store.list_users():
+            settings = await self._store.get(user_id)
+            if settings is None:
+                continue
+            subscribers.append(
+                Subscriber(
+                    user_id=settings.user_id,
+                    policy=settings.alert_policy(),
+                    language=settings.language,
+                    paused=settings.paused,
+                )
+            )
+        return subscribers
 
 
 class InMemoryWatchlistStore:

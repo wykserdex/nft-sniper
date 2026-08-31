@@ -152,3 +152,60 @@ def test_alert_message_with_buttons() -> None:
     )
     assert len(message.buttons) == 2
     assert message.buttons[0].callback_data == "take:al-1"
+
+
+# ── quiet hours ────────────────────────────────────────────────
+
+
+def test_policy_quiet_hours_within_window() -> None:
+    policy = default_policy()
+    policy = AlertPolicy(
+        min_discount=policy.min_discount,
+        min_confidence=policy.min_confidence,
+        price_min=policy.price_min,
+        price_max=policy.price_max,
+        min_liquidity=policy.min_liquidity,
+        max_risk=policy.max_risk,
+        quiet_hours=((0, 8),),
+    )
+    assert policy.is_quiet(datetime(2026, 8, 31, 3, 0, 0, tzinfo=UTC)) is True
+    assert policy.is_quiet(datetime(2026, 8, 31, 12, 0, 0, tzinfo=UTC)) is False
+
+
+def test_policy_quiet_hours_crossing_midnight() -> None:
+    policy = default_policy()
+    policy = AlertPolicy(
+        min_discount=policy.min_discount,
+        min_confidence=policy.min_confidence,
+        price_min=policy.price_min,
+        price_max=policy.price_max,
+        min_liquidity=policy.min_liquidity,
+        max_risk=policy.max_risk,
+        quiet_hours=((22, 6),),
+    )
+    assert policy.is_quiet(datetime(2026, 8, 31, 23, 30, 0, tzinfo=UTC)) is True
+    assert policy.is_quiet(datetime(2026, 8, 31, 2, 0, 0, tzinfo=UTC)) is True
+    assert policy.is_quiet(datetime(2026, 8, 31, 13, 0, 0, tzinfo=UTC)) is False
+
+
+def test_policy_quiet_hours_validation() -> None:
+    with pytest.raises(ValueError, match="quiet_hours"):
+        AlertPolicy(
+            min_discount=D("0.1"),
+            min_confidence=D("0.5"),
+            price_min=TONAmount.from_ton(1),
+            price_max=TONAmount.from_ton(10),
+            min_liquidity=D("0.1"),
+            max_risk=D("0.5"),
+            quiet_hours=((0, 24),),
+        )
+    with pytest.raises(ValueError, match="quiet_hours"):
+        AlertPolicy(
+            min_discount=D("0.1"),
+            min_confidence=D("0.5"),
+            price_min=TONAmount.from_ton(1),
+            price_max=TONAmount.from_ton(10),
+            min_liquidity=D("0.1"),
+            max_risk=D("0.5"),
+            quiet_hours=((7, 7),),
+        )

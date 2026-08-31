@@ -11,6 +11,8 @@ from collections.abc import Callable, Mapping, Sequence
 from datetime import datetime
 from decimal import Decimal
 
+from nftsniper.contexts.alerts.domain.alert import Alert, AlertMessage, Decision
+from nftsniper.contexts.alerts.domain.candidate import Subscriber
 from nftsniper.contexts.sources.domain.chain import NftTransfer, SaleVerification, WalletInfo
 from nftsniper.contexts.sources.domain.collection import Collection
 from nftsniper.contexts.sources.domain.fragment import FragmentAsset, FragmentAuction
@@ -352,3 +354,75 @@ class FakeMediaPort:
     async def is_available(self, url: str) -> bool:
         self.calls.append(url)
         return self.availability.get(url, False)
+
+
+class InMemoryAlertRepository:
+    """AlertRepository в памяти: save/get, дедуп, счётчик для rate limit."""
+
+    def __init__(self) -> None:
+        self._data: dict[str, Alert] = {}
+
+    async def save(self, alert: Alert) -> None:
+        self._data[alert.id] = alert
+
+    async def get(self, alert_id: str) -> Alert | None:
+        return self._data.get(alert_id)
+
+    async def find_recent_by_dedup(
+        self, user_id: str, dedup_key: str, since_ts: datetime
+    ) -> Alert | None:
+        for alert in self._data.values():
+            if (
+                alert.user_id == user_id
+                and alert.dedup_key == dedup_key
+                and alert.sent_at >= since_ts
+            ):
+                return alert
+        return None
+
+    async def count_recent(self, user_id: str, since: datetime) -> int:
+        return sum(
+            1
+            for alert in self._data.values()
+            if alert.user_id == user_id and alert.sent_at >= since
+        )
+
+
+class FakeNotifier:
+    """NotifierPort в памяти: логирует отправку и редактирование."""
+
+    def __init__(self) -> None:
+        self.sent: list[tuple[str, AlertMessage]] = []
+        self.edits: list[tuple[str, str, AlertMessage]] = []
+        self._counter = 0
+
+    async def send(self, user_id: str, message: AlertMessage) -> str:
+        self._counter += 1
+        self.sent.append((user_id, message))
+        return f"tg-{self._counter}"
+
+    async def edit(self, user_id: str, message_id: str, message: AlertMessage) -> None:
+        self.edits.append((user_id, message_id, message))
+
+
+class FakeSubscriberDirectory:
+    """SubscriberDirectory в памяти: список подписчиков задаётся целиком."""
+
+    def __init__(self, subscribers: Sequence[Subscriber] = ()) -> None:
+        self.subscribers = list(subscribers)
+
+    async def list_subscribers(self) -> Sequence[Subscriber]:
+        return list(self.subscribers)
+
+
+class InMemoryDecisionRepository:
+    """DecisionRepository (alerts) в памяти: save/list_by_alert."""
+
+    def __init__(self) -> None:
+        self._data: list[Decision] = []
+
+    async def save(self, decision: Decision) -> None:
+        self._data.append(decision)
+
+    async def list_by_alert(self, alert_id: str) -> list[Decision]:
+        return [decision for decision in self._data if decision.alert_id == alert_id]

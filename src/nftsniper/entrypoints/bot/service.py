@@ -164,6 +164,7 @@ class BotService:
                 min_liquidity=settings.min_liquidity,
                 max_risk=settings.max_risk,
                 max_alerts_per_hour=settings.max_alerts_per_hour,
+                quiet_hours=settings.quiet_hours,
                 paused=paused,
                 muted_collections=settings.muted_collections,
             )

@@ -14,12 +14,44 @@ quiet hours, приоритизация (сначала лучшие сделк�
 - **Адаптер Telegram** (`adapters/telegram/notifier.py`): `TelegramNotifier` —
   отправка и редактирование алертов (parse_mode HTML), `build_inline_keyboard`.
 
-Рендер алерта (формат ТЗ §1) и кнопки-решения — в `entrypoints/bot/`
-(render.py, service.py, handlers.py): бот строит AlertMessage и передаёт
-нотификатору, а после решения — редактирует сообщение (ТЗ §6).
+## Что готово (— Alert Engine)
 
-## Дальше (11)
+- **Домен**:
+  - `AlertPolicy.quiet_hours` (окна тишины, часы UTC, могут пересекать полночь)
+    + `is_quiet(now)`; валидация часов в [0, 23].
+  - `candidate.py`: `Subscriber` (user_id + AlertPolicy + язык + пауза),
+    `ListingScore` (сводка оценённого листинга для notifier — риск в плоских
+    значениях, без зависимости alerts → risk), `AlertCandidate` (прошедший
+    матчинг, готовый к рендеру).
+- **Порты**: `AlertRepository.count_recent` (rate limit),
+  `AlertRepository.find_recent_by_dedup` (дедуп, окно из политики),
+  `SubscriberDirectory` (список подписчиков).
+- **Application**:
+  - `matcher.py` — чистый матчинг: `match_listing` (пауза → quiet hours →
+    пороги `AlertPolicy.allows` → `AlertCandidate`) и `candidate_priority`
+    (дискаунт ×10 + уверенность, Decimal).
+  - `engine.py` — `AlertEngine.deliver/deliver_batch`: матчинг →
+    пер-пользовательский top-K по бюджету (max_alerts_per_hour) →
+    глобальный max-heap по приоритету → доставка с дедупом и rate limit.
+    Всплеск 1000 листингов/мин ограничен бюджетами: отправляется не больше
+    лимита на человека, очередь не раздувается.
+  - `decisions.py` — `RecordDecision`: каноническая запись решения +
+    `DecisionRecorded` для калибровки.
+- **Мостик бота** (`entrypoints/bot/`): `UserSettings.quiet_hours` пробрасывается
+  в `alert_policy()`; `UserSettingsStore.list_users()`; адаптер
+  `SubscriberDirectoryFromSettings`; `render_candidate` (AlertCandidate →
+  сообщение алерта) — рендер движка.
 
-- матчинг листингов с `UserSettings.alert_policy()` (бот уже умеет их хранить);
-- дедупликация, rate limit, quiet hours, приоритизация;
-- запись решений в Postgres и калибровка порогов.
+## Acceptance
+
+`tests/unit/test_alert_engine.py`: нет дублей (дедуп по (user, dedup_key) в
+окне), лимиты соблюдаются (не более max_alerts_per_hour в час, с учётом уже
+отправленных), всплеск 1000 листингов → отправляется ровно бюджет, лучшие
+сделки уходят первыми.
+
+## Дальше
+
+- запись решений в Postgres и калибровка порогов;
+- Postgres/Redis-реализации репозиториев и SubscriberDirectory;
+- воркер notifier (entrypoints/workers): PollListings → ScoreListing →
+  risk screening → AlertEngine.deliver_batch.
