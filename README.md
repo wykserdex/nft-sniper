@@ -160,7 +160,7 @@ nft-sniper/
 | 4 | Chain Adapter (TonAPI): владелец, трансферы, sale-контракты, возраст кошелька, сверка цен с маркетплейсом | ✅ |
 | 5 | Fragment Adapter: номера/юзернеймы — on-chain первичен, парсинг fragment.com fallback, флаг отключения, rate limit + кэш, деградация | ✅ |
 | 6 | Statistics Engine (price_stats): floor P5, медиана с затуханием, объёмы, sales_per_day, liquidity, momentum 24h/7d; пересчёт `RebuildStats`; perf SLA на 10k предметов | ✅ |
-| 7 | Valuation Engine (ансамбль) | ⬜ |
+| 7 | Valuation Engine (ансамбль floor/comps/trait/momentum, confidence + интервал P25/P75, версия модели, объяснение, бэктест медианной ошибки) | ✅ |
 | 8 | Risk & Anti-Scam | ⬜ |
 | 9 | Alert Engine | ⬜ |
 | 10 | Telegram Bot (aiogram 3): /start /settings (FSM) /watchlist /stats /mute /pause, рендер алерта по ТЗ §1, кнопки-решения, локализация RU/EN, TelegramNotifier | ✅ |

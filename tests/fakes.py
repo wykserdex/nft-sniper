@@ -18,7 +18,7 @@ from nftsniper.contexts.sources.domain.item import Item
 from nftsniper.contexts.sources.domain.listing import Listing
 from nftsniper.contexts.sources.domain.sale import SaleEvent
 from nftsniper.contexts.sources.ports.fragment import FragmentError
-from nftsniper.contexts.valuation.domain.fair_price import CollectionFeatures
+from nftsniper.contexts.valuation.domain.fair_price import CollectionFeatures, FairPriceEstimate
 
 
 class FakeMarketplacePort:
@@ -311,3 +311,20 @@ class FakeFragmentPort:
             if sale.item_id == asset_address and (since is None or sale.sold_at >= since)
         ]
         return selected[:limit]
+
+
+class InMemoryValuationRepository:
+    """ValuationRepository в памяти: оценки по listing_id (ТЗ §5)."""
+
+    def __init__(self) -> None:
+        self._data: dict[str, FairPriceEstimate] = {}
+        self._counter = 0
+
+    async def save(self, listing_id: str, estimate: FairPriceEstimate) -> str:
+        self._counter += 1
+        valuation_id = f"valuation-{self._counter}"
+        self._data[listing_id] = estimate
+        return valuation_id
+
+    async def get_by_listing(self, listing_id: str) -> FairPriceEstimate | None:
+        return self._data.get(listing_id)
