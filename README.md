@@ -37,6 +37,50 @@ curl localhost:8080/metrics   # Prometheus
 nftsniper check               # CLI-верификация связности (exit 0/1)
 ```
 
+## Mini App: деталка NFT + оплата в TON Keeper (правка к ТЗ, §11)
+
+Telegram Mini App внутри бота: детальный просмотр NFT (изображение, трейты,
+редкость, floor/median, fair price с confidence и объяснением, риск-флаги,
+продавец, история floor) и **оплата P2P-пересылкой TON из self-custody
+кошелька (TON Keeper) напрямую продавцу** — без маркетплейса и без эскроу.
+
+```bash
+make run
+# браузер:  http://localhost:8080/webapp/        (работает через API, dev-режим)
+# офлайн:   http://localhost:8080/webapp/?demo=1 (демо-данные без бэкенда)
+```
+
+Цикл сделки:
+
+```
+создать сделку (item + ваш адрес) → показать QR (ton://transfer/…)
+  → покупатель открывает TON Keeper (deep-link / universal link / скан QR)
+  → перевод на кошелёк продавца: точная сумма + коммент-ид сделки
+  → бот верифицирует пересылку (memo + сумма + адрес, до TTL)
+  → «paid» → покупатель подтверждает получение NFT → «completed»
+```
+
+- Форматы: TEP-2 адреса (EQ…/UQ…, 46/48 символов, CRC16), ссылка
+  `ton://transfer/{ADDR}?amount={nano}&text={memo}` (QR = deep-link),
+  `tonkeeper://…` и `https://app.tonkeeper.com/…`.
+- Пока нет ChainPort, верификация оплаты — dev-эндпоинт
+  `POST /api/webapp/dev/transfer` (только `NFT_APP_ENV=dev`).
+- Демо-константы фронтенда: `scripts/gen_webapp_demo.py` (пересобирает блок
+  в `static/index.html` из sample-данных).
+
+Кнопка в алерте:
+
+```python
+from aiogram.types import InlineKeyboardButton, WebAppInfo
+button = InlineKeyboardButton(
+    text="🔥 Deal 42% — в приложении",
+    web_app=WebAppInfo(url=f"{settings.webapp_url}/webapp/#nft/{item_id}"),
+)
+```
+
+⚠️ P2P без эскроу: бот не держит средства. В UI — явные предупреждения,
+возраст кошелька продавца, точная сумма + memo, TTL сделки.
+
 Качественные проверки (то, что гоняет CI):
 
 ```bash
@@ -98,7 +142,8 @@ nft-sniper/
 
 | Агент | Что | Статус |
 |---|---|---|
-| 1 | Skeleton & Infra: каркас, pyproject, ruff/mypy strict, compose, settings, логи, health, CI | ✅ **этот коммит** |
+| 1 | Skeleton & Infra: каркас, pyproject, ruff/mypy strict, compose, settings, логи, health, CI | ✅ |
+| — | Mini App + OTC-оплата в TON Keeper (правка к ТЗ, §11) | ✅ |
 | 2 | Domain & Ports: деньги, сущности, порты | ⬜ |
 | 3 | GetGems Adapter | ⬜ |
 | 4 | Chain Adapter (TonAPI/TonCenter) | ⬜ |

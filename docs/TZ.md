@@ -106,6 +106,8 @@ nft-sniper/
 
 Стек: Python 3.12, aiogram 3, SQLAlchemy 2.0 async, PostgreSQL, Redis, httpx, Pydantic v2 (только на границах), pytest, ruff, mypy strict.
 
+> Пправки (§11) добавляют `contexts/otc/` и `entrypoints/webapp/` к дереву выше.
+
 ---
 
 ## 3. Источники данных
@@ -342,3 +344,71 @@ Prometheus-метрики: задержка pipeline, срабатывания r
 - **Take rate**: доля алертов, по которым пользователь нажал «Взять».
 - **Скам-пропуски**: сколько мусорных алертов дошло до пользователя.
 - **Ошибка оценки**: MAPE fair price против фактических продаж.
+
+---
+
+## 11. Правки (вне базового ТЗ)
+
+### 11.1 Mini App + оплата OTC-пересылкой в TON Keeper
+
+Алерт открывает Telegram Mini App: деталка NFT + оплата прямой пересылкой TON
+из self-custody кошелька (TON Keeper) **напрямую продавцу** (off-market,
+без маркетплейса и без эскроу).
+
+**Что видно в деталке**: изображение, название, коллекция, редкость,
+трейты с долями, цена листинга (TON + $), floor (с 24h-изменением),
+median 7d (число продаж), liquidity, возраст листинга, fair price с
+confidence и объяснением, риск-флаги, продавец (адрес + возраст кошелька),
+floor-график за 7 дней.
+
+**Цикл оплаты (состояния сделки)**:
+
+```
+awaiting_payment → paid → completed
+      ↘ expired        ↘ (cancelled из awaiting_payment)
+```
+
+1. `create`: предмет + адрес кошелька покупателя → id `OTC-XXXXXX`
+   (алфавит без 0/O/1/I/L), сумма = цена листинга (nanoTON), TTL (дефолт 30 мин).
+2. UI показывает: QR (`ton://transfer/{ADDR}?amount={nano}&text={OTC-XXXXXX}`),
+   адрес продавца (TEP-2, UQ…), сумму, коммент; кнопки — открыть TON Keeper
+   (`tonkeeper://…` / universal `https://app.tonkeeper.com/…`), копировать.
+3. Покупатель переводит из своего кошелька: **точная сумма + memo-идентификатор**.
+4. `paid`: бот верифицирует входящий перевод на адрес продавца
+   (адрес + сумма + memo + время ≥ created). До  — dev-симуляция
+   (`/api/webapp/dev/transfer`, только `NFT_APP_ENV=dev`); далее — ChainPort
+   (TonAPI/TonCenter), как в §3.
+5. `completed`: покупатель подтверждает получение NFT (опц. on-chain-проверка
+   трансфера на адрес покупателя —).
+
+**Безопасность P2P (обязательно в UI)**:
+- явный дисклеймер «без эскроу, риск на покупателе»;
+- точная сумма и обязательный memo (защита от переплаты и «потерянного» платежа);
+- TTL сделки (истёк → expired, цена могла измениться);
+- возраст кошелька продавца — в деталке и в risk-флагах (свежие кошельки —
+  признак скама, см. §4);
+- адрес покупателя нужен для последующей ончейн-верификации получения NFT.
+
+**Форматы**: TEP-2 (EQ…/UQ…, 46 символов без CRC16 / 48 с), ссылки
+`ton://transfer`, `tonkeeper://transfer`, `https://app.tonkeeper.com/transfer`
+(amount — nanogram, text — URL-encoded). Реализация: `shared/ton_address.py`.
+
+**Контур** (hexagonal, как в остальном проекте):
+
+```
+contexts/otc/
+  domain/       ItemSnapshot, OtcDeal (immutable, статусы, переходы)
+  ports/        ItemSourcePort, OtcDealRepository, TransferObservationPort, QrCodePort
+  application/  OtcService (create/check_payment/cancel/confirm/sweep)
+  adapters/     SampleItemSource (пока), InMemoryRepo, DevTransferStore, SegnoQr
+entrypoints/webapp/
+  api.py        /api/webapp/* (items, nft/{id}, otc/create|status|check|cancel|confirm|qr)
+  static/       index.html (vanilla SPA, Telegram WebApp SDK, demo-режим)
+```
+
+В прод: хранилище сделок → Postgres (таблицы по мотивам §5:
+`otc_deals` + join к `alerts`), источник карточек → contexts/sources,
+наблюдение пересылок → ChainPort.
+
+**Метрики (дополнение к §10)**: otc_take_rate (доля сделок дошедших до paid),
+otc_completion_rate (paid → completed), доля сделок с «чужим» memo/суммой.

@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NFT Sniper</title>
+<style>
+  :root {
+    --bg: #0d1220; --panel: #161d30; --panel2: #1d2742; --border: #26304d;
+    --text: #e9edf7; --muted: #93a0bd; --accent: #526eff; --accent2: #0098ea;
+    --ok: #3ddc84; --warn: #ffb020; --danger: #ff5c6c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); }
+  body {
+    font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    padding-bottom: 40px;
+  }
+  #app { max-width: 460px; margin: 0 auto; }
+  header {
+    position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 8px;
+    padding: 12px 16px; background: rgba(13,18,32,.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo { font-size: 17px; letter-spacing: .3px; flex: 1; }
+  .logo b { color: var(--accent2); }
+  .demo-badge {
+    background: var(--warn); color: #201500; font-weight: 700; font-size: 11px;
+    padding: 2px 8px; border-radius: 20px; letter-spacing: .5px;
+  }
+  .hidden { display: none !important; }
+  .icon-btn {
+    background: none; border: none; color: var(--muted); font-size: 18px;
+    cursor: pointer; padding: 4px 8px;
+  }
+  main { padding: 16px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 16px; padding: 16px; margin-bottom: 14px;
+  }
+  .card-title { font-size: 13px; color: var(--muted); margin-bottom: 10px; font-weight: 600; }
+  .muted { color: var(--muted); }
+  .small { font-size: 12.5px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; word-break: break-all; }
+  .badge {
+    display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12.5px;
+    font-weight: 600; background: var(--panel2); border: 1px solid var(--border); margin: 0 6px 6px 0;
+  }
+  .badge.deal { background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; }
+  .cta {
+    display: block; width: 100%; padding: 15px; border: none; border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; margin: 8px 0;
+    text-align: center; text-decoration: none;
+  }
+  .cta:active { opacity: .85; }
+  .ghost {
+    display: block; width: 100%; padding: 13px; border: 1px solid var(--border); border-radius: 14px;
+    background: none; color: var(--muted); font-size: 14.5px; cursor: pointer; margin: 4px 0;
+    text-align: center; text-decoration: none;
+  }
+  /* список */
+  .item-card { display: flex; gap: 12px; align-items: center; cursor: pointer; }
+  .item-card:active { background: var(--panel2); }
+  .thumb {
+    width: 64px; height: 64px; border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, #2a3560, #12324a); display: flex;
+    align-items: center; justify-content: center; font-weight: 800; color: #9db8ff; font-size: 15px;
+    overflow: hidden;
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .item-name { font-weight: 700; }
+  .item-price { color: var(--accent2); font-weight: 700; }
+  /* деталка */
+  .nft-img-wrap { position: relative; margin-bottom: 14px; }
+  .nft-img-wrap img {
+    width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 18px;
+    border: 1px solid var(--border); background: var(--panel);
+  }
+  .nft-img-fallback {
+    display: none; position: absolute; inset: 0; border-radius: 18px;
+    background: linear-gradient(135deg, #22305c, #0f3a52 60%, #1c2547);
+    align-items: center; justify-content: center; border: 1px solid var(--border);
+  }
+  .nft-img-fallback span { font-size: 44px; font-weight: 800; color: #9db8ff; opacity: .8; }
+  .nft-title { font-size: 20px; font-weight: 800; margin-bottom: 2px; }
+  .nft-sub { color: var(--muted); font-size: 13.5px; margin-bottom: 10px; }
+  .price-main { font-size: 26px; margin-bottom: 12px; }
+  .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .price-grid > div { background: var(--panel2); border-radius: 10px; padding: 9px 11px; }
+  .price-grid span { display: block; font-size: 11.5px; color: var(--muted); margin-bottom: 2px; }
+  .price-grid b { font-size: 14.5px; }
+  .conf-bar {
+    height: 6px; border-radius: 3px; background: var(--panel2); overflow: hidden; margin: 4px 2px 10px;
+  }
+  .conf-bar div { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .explain { font-size: 13px; color: var(--muted); margin: 3px 2px; }
+  .traits { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+  .trait {
+    background: var(--panel2); border-radius: 10px; padding: 9px 11px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .trait span { font-size: 11.5px; color: var(--muted); }
+  .trait b { font-size: 14px; }
+  .trait em { font-style: normal; font-size: 11.5px; color: var(--accent2); }
+  .risk {
+    background: rgba(255,176,32,.08); border: 1px solid rgba(255,176,32,.35);
+    border-radius: 12px; padding: 10px 12px; font-size: 13.5px; margin-bottom: 14px;
+  }
+  .addr { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; word-break: break-all; color: var(--accent2); }
+  .hist { margin-bottom: 14px; }
+  .p2p-note {
+    font-size: 12.5px; color: var(--muted); background: var(--panel);
+    border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; margin-top: 6px;
+  }
+  /* оплата */
+  .addr-input {
+    width: 100%; background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 12px; padding: 13px; font-size: 14px; font-family: ui-monospace, Menlo, monospace;
+    margin-bottom: 10px; outline: none;
+  }
+  .addr-input:focus { border-color: var(--accent); }
+  .demo-note { color: var(--warn); font-size: 12.5px; margin-top: 8px; }
+  .qr-card { text-align: center; }
+  .qr-wrap { position: relative; display: inline-block; margin: 6px 0 12px; }
+  .qr-wrap img {
+    width: 220px; height: 220px; border-radius: 14px; background: #fff; padding: 8px;
+  }
+  .qr-watermark {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 34px; font-weight: 900; color: rgba(255,80,80,.55);
+    transform: rotate(-18deg); pointer-events: none; letter-spacing: 4px;
+  }
+  .pay-row {
+    display: flex; align-items: center; gap: 8px; padding: 9px 0;
+    border-bottom: 1px solid var(--border); font-size: 14px; text-align: left;
+  }
+  .pay-row span { color: var(--muted); width: 64px; flex-shrink: 0; font-size: 12.5px; }
+  .pay-row b { flex: 1; word-break: break-all; font-size: 13px; }
+  .mini {
+    border: 1px solid var(--border); background: var(--panel2); color: var(--text);
+    border-radius: 8px; padding: 5px 9px; cursor: pointer; font-size: 14px; flex-shrink: 0;
+  }
+  .status { padding: 6px 0 14px; text-align: center; }
+  .status-icon { font-size: 44px; margin-bottom: 8px; }
+  .status .muted { margin-top: 6px; font-size: 13.5px; }
+  .status code { background: var(--panel2); padding: 1px 6px; border-radius: 6px; }
+  .status.paid b { color: var(--ok); }
+  .status.done b { color: var(--ok); }
+  .status.failed b { color: var(--danger); }
+  #toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+    background: #2a3560; border: 1px solid var(--border); color: var(--text);
+    padding: 11px 18px; border-radius: 12px; font-size: 14px; opacity: 0;
+    transition: all .25s; pointer-events: none; max-width: 90%; z-index: 10;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">NFT <b>Sniper</b></div>
+    <span id="demo-badge" class="demo-badge hidden">ДЕМО</span>
+    <button id="btn-close" class="icon-btn" title="Закрыть">✕</button>
+  </header>
+  <main id="screen"></main>
+</div>
+<div id="toast"></div>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+"use strict";
+
+// >>> demo-constants (генерируется scripts/gen_webapp_demo.py)
+const DEMO_ITEM = {"id": "anon-888", "name": "Anonymous Telegram Number #888", "collection_name": "Anonymous Numbers", "image_url": "https://ipfs.io/ipfs/QmSampleAnon888TokenImageUri", "price_ton": "120", "price_nano": "120000000000", "price_usd_approx": "~$580", "floor_ton": "195", "floor_24h_change": "-3%", "median_7d_ton": "214", "sales_7d": 18, "liquidity_per_day": "2.4", "listing_age": "11 сек", "rarity_note": "топ 8% по коллекции", "traits": [{"name": "Number", "value": "888", "rarity": "0.4%"}, {"name": "Pattern", "value": "Repeater", "rarity": "3.1%"}, {"name": "Length", "value": "3 цифры", "rarity": "12.6%"}, {"name": "Type", "value": "Anonymous", "rarity": "—"}], "valuation": {"fair_price_ton": "207", "discount_pct": "-42%", "confidence": "0.78", "explanation": ["Floor P5: 195 TON, стабилен 7 дней", "Медиана 18 сопоставимых продаж (7d, затухание): 214 TON", "Редкость: топ 8% коллекции — премия заложена в оценку"]}, "risk_flags": ["⚠️ Кошелёк продавца создан 2 дня назад"], "seller_address": "UQCIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiMjA", "seller_address_short": "UQCIiI…iMjA", "seller_wallet_age": "2 дня", "price_history": [{"days_ago": 7, "price_ton": "228"}, {"days_ago": 6, "price_ton": "224"}, {"days_ago": 5, "price_ton": "219"}, {"days_ago": 4, "price_ton": "216"}, {"days_ago": 3, "price_ton": "218"}, {"days_ago": 2, "price_ton": "210"}, {"days_ago": 1, "price_ton": "205"}, {"days_ago": 0, "price_ton": "195"}]};
+const DEMO_PAYMENT = {"seller_address": "UQCIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiMjA", "seller_address_short": "UQCIiI…iMjA", "amount_nano": "120000000000", "amount_ton": "120", "comment": "OTC-DEMO1", "qr_url": "ton://transfer/UQCIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiMjA?amount=120000000000&text=OTC-DEMO1", "qr_data_uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAcIAAAHCAQAAAABUY/ToAAAC9ElEQVR42u2cUY6kMAxErekDcKRcnSNxAKQMJHZsQ2BWo5VWWj0+Wk3T9YNK5SrbIPWXxyogQYIE+beQm+hRtk+VUnc5fpbzwnF6Hu1UZKnV/vk5kF/y2wPk/4XsVGnHQZ+TVUv7aERqF3b9y3na/9JPubcgI4eatDQJckVq9Gnq49+OC3YVDoGccWg769YhQZ1NJTMHDoH8Ew6ZGCl9dqPUpmUMDoH8wQ85QU5KaRmrSq6uQ/ghkDMO5Vz2+kEuAznjkB9WsnqY7yl/8dPcFeDegsy1zEWmk6b9pppz0StqGciJDml5MuZ4OLOrpkPdKFHLQN5zWRmmqKWxRqShQ73lGNqQcAjkvJZZi7qGgK86tGjU7wg4BHKSy7RFHZ2Rx3o10V2MlFdwCOTFD2lXKNU3GcY6Z3s4BPLJU9vIPk5aNZeZH4ojWO4tyJzUFyNN2P0Y8zKxgYcvhcAhkFmHtIu4xVwW1GddhluqO/MykHMOLXF1yMZiM9+EDoGc57LRjo5NIm8q2toHtQzkkx8KiqStRBUj99Qxl8EhkJcalfbN1PYM+ojo4HUMQeAQyKkOWQMxpPya5mVhgs+8DOSTHxr71CY3bo/cD33YQQM5y2W6s2hDszAvW+2JoNujH9xbkA86VMxTx+fL8qiMWQfIu6e2PUaP9XsO+Pc9IzgEMnOoeWWfl62S94dCLdvx1CBntcxC1xjPL8kPlZr6Q+gQyHu29+IVWDIWi1SqfMERPwTy7qlLWGb0ab3POkYbUuhTg5xn+5JMtJWxPfWH2B8C+dofGmuwZRseSVygRPzBMzgEct4fShksxLTF1UeoZSAfdejynGvqMX7iU2V4apCvOlR8Mh88UtyFZQcN5Eu2zy/1GIv5q6SuUIVDIOcckus7rLb06LSvXMvw2XAI5IxDvR0tYSf/WsYCw7i3IGccyu+r8kXrtBlCLQP54ocujwXF/aGwg8a8DORzLvNX5iU2+aisv3SYHTSQT/0h3gIPEiTIf4D8Bnm8qxhwhQMkAAAAAElFTkSuQmCC", "tonkeeper_url": "tonkeeper://transfer/UQCIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiMjA?amount=120000000000&text=OTC-DEMO1", "universal_link": "https://app.tonkeeper.com/transfer/UQCIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiMjA?amount=120000000000&text=OTC-DEMO1"};
+const DEMO_BUYER = "UQBCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQjgn";
+// <<< demo-constants
+
+const $ = (s) => document.querySelector(s);
+const screenEl = $("#screen");
+const DEMO_DEAL_ID = "OTC-DEMO1";
+
+const state = {
+  demo: new URLSearchParams(location.search).has("demo"),
+  item: null,
+  deal: null,
+  buyer: localStorage.getItem("ns_buyer") || "",
+  demoCheckCount: 0,
+  pollTimer: null,
+};
+
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) {
+  try { tg.ready(); tg.expand(); tg.setHeaderColor("#0d1220"); } catch (e) {}
+}
+
+function closeApp() {
+  if (tg && tg.close) { try { tg.close(); return; } catch (e) {} }
+  if (history.length > 1) history.back();
+  else document.body.innerHTML = "<p style='color:#93a0bd;text-align:center;margin-top:36vh'>NFT Sniper закрыт</p>";
+}
+$("#btn-close").onclick = closeApp;
+
+const api = {
+  async get(p) {
+    const r = await fetch(p, { headers: { Accept: "application/json" } });
+    if (!r.ok) {
+      const body = await r.json().catch(() => ({}));
+      throw new Error(body.detail || ("HTTP " + r.status));
+    }
+    return r.json();
+  },
+  async post(p, body) {
+    const r = await fetch(p, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(body || {}),
+    });
+    if (!r.ok) {
+      const j = await r.json().catch(() => ({}));
+      throw new Error(j.detail || ("HTTP " + r.status));
+    }
+    return r.json();
+  },
+};
+
+const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => (
+  { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+));
+
+let toastTimer;
+function toast(msg) {
+  const el = $("#toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
+}
+
+function showDemoBadge() {
+  $("#demo-badge").classList.toggle("hidden", !state.demo);
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast("Скопировано: " + (text.length > 24 ? text.slice(0, 24) + "…" : text));
+  } catch (e) {
+    toast("Не удалось скопировать — выделите вручную");
+  }
+}
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-copy]");
+  if (btn) copyText(btn.getAttribute("data-copy"));
+});
+
+function sparkline(points) {
+  const sorted = [...points].sort((a, b) => b.days_ago - a.days_ago);
+  const vals = sorted.map((p) => parseFloat(p.price_ton));
+  if (!vals.length) return "";
+  const min = Math.min(...vals), max = Math.max(...vals);
+  const W = 320, H = 84, pad = 8;
+  const span = max - min || 1;
+  const coords = sorted.map((p, i) => {
+    const x = pad + (W - 2 * pad) * (i / (vals.length - 1 || 1));
+    const y = H - pad - (H - 2 * pad) * ((vals[i] - min) / span);
+    return [x, y];
+  });
+  const line = coords.map((c) => c.map((n) => n.toFixed(1)).join(",")).join(" ");
+  const area = pad + "," + (H - pad) + " " + line + " " + (W - pad) + "," + (H - pad);
+  const last = coords[coords.length - 1];
+  return '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" height="' + H + '" preserveAspectRatio="none">' +
+    '<polyline points="' + area + '" fill="rgba(0,152,234,.14)" stroke="none"></polyline>' +
+    '<polyline points="' + line + '" fill="none" stroke="#0098ea" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>' +
+    '<circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="3.5" fill="#526eff"></circle>' +
+    "</svg>";
+}
+
+function itemThumb(it) {
+  const num = (it.name.match(/#(\d+)/) || [])[1] || "?";
+  return '<div class="thumb"><img src="' + esc(it.image_url) + '" alt="" onerror="this.style.display=\'none\';this.parentNode.innerHTML=\'#' + esc(num.slice(0, 4)) + '\'"></div>';
+}
+
+// ── экран: список ───────────────────────────────────────────────────────
+async function renderList() {
+  let items;
+  try {
+    items = await api.get("/api/webapp/items");
+    state.demo = false;
+  } catch (e) {
+    state.demo = true;
+    const d = DEMO_ITEM;
+    items = [{
+      id: d.id, name: d.name, collection_name: d.collection_name,
+      price_ton: d.price_ton, price_nano: d.price_nano, image_url: d.image_url,
+      rarity_note: d.rarity_note, discount_pct: d.valuation.discount_pct,
+    }];
+  }
+  showDemoBadge();
+  screenEl.innerHTML =
+    '<div class="card" style="text-align:center">' +
+    '<div style="font-size:28px">🎯</div>' +
+    "<b>Недооценённые NFT</b>" +
+    '<div class="muted small" style="margin-top:4px">Открыто ' + items.length + " — нажмите на предмет, чтобы увидеть деталку и оплатить напрямую</div>" +
+    "</div>" +
+    items.map((it) =>
+      '<div class="card item-card" data-id="' + esc(it.id) + '">' +
+      itemThumb(it) +
+      '<div style="flex:1;min-width:0">' +
+      '<div class="item-name">' + esc(it.name) + "</div>" +
+      '<div class="muted small">' + esc(it.collection_name) + "</div>" +
+      '<div><span class="item-price">' + esc(it.price_ton) + " TON</span> <span class=\"badge deal\" style=\"margin:0\">Deal " + esc(it.discount_pct) + "</span></div>" +
+      "</div></div>"
+    ).join("");
+  screenEl.querySelectorAll(".item-card").forEach((el) => {
+    el.onclick = () => { location.hash = "#/nft/" + encodeURIComponent(el.getAttribute("data-id")); };
+  });
+}
+
+// ── экран: деталка NFT ──────────────────────────────────────────────────
+async function loadItem(id) {
+  try {
+    state.item = await api.get("/api/webapp/nft/" + encodeURIComponent(id));
+    state.demo = false;
+  } catch (e) {
+    state.demo = true;
+    state.item = DEMO_ITEM;
+  }
+  showDemoBadge();
+  renderNft();
+}
+
+function renderNft() {
+  const it = state.item;
+  const v = it.valuation;
+  const confPct = Math.round(parseFloat(v.confidence) * 100);
+  const num = (it.name.match(/#(\d+)/) || [])[1] || "?";
+  screenEl.innerHTML =
+    '<div class="nft-img-wrap">' +
+    '<img src="' + esc(it.image_url) + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
+    '<div class="nft-img-fallback"><span>#' + esc(num) + "</span></div>" +
+    "</div>" +
+    '<div class="nft-title">' + esc(it.name) + "</div>" +
+    '<div class="nft-sub">Коллекция: ' + esc(it.collection_name) + " · " + esc(it.rarity_note) + "</div>" +
+    '<div><span class="badge deal">Deal ' + esc(v.discount_pct) + "</span>" +
+    '<span class="badge">Floor ' + esc(it.floor_ton) + " TON (" + esc(it.floor_24h_change) + " за 24h)</span></div>" +
+    '<div class="card" style="margin-top:12px">' +
+    '<div class="price-main"><b>' + esc(it.price_ton) + " TON</b> <span class=\"muted\" style=\"font-size:15px\">" + esc(it.price_usd_approx) + "</span></div>" +
+    '<div class="price-grid">' +
+    "<div><span>Fair price</span><b>" + esc(v.fair_price_ton) + " TON</b></div>" +
+    "<div><span>Уверенность оценки</span><b>" + confPct + "%</b></div>" +
+    "<div><span>Median 7d (" + it.sales_7d + " продаж)</span><b>" + esc(it.median_7d_ton) + " TON</b></div>" +
+    "<div><span>Ликвидность</span><b>" + esc(it.liquidity_per_day) + " прод/день</b></div>" +
+    "<div><span>Возраст листинга</span><b>" + esc(it.listing_age) + "</b></div>" +
+    "<div><span>Продавец</span><b>" + esc(it.seller_address_short) + "</b></div>" +
+    "</div></div>" +
+    '<div class="conf-bar"><div style="width:' + confPct + '%"></div></div>' +
+    v.explanation.map((e) => '<div class="explain">• ' + esc(e) + "</div>").join("") +
+    '<div class="traits">' +
+    it.traits.map((t) =>
+      '<div class="trait"><span>' + esc(t.name) + "</span><b>" + esc(t.value) + "</b><em>" + esc(t.rarity) + "</em></div>"
+    ).join("") +
+    "</div>" +
+    (it.risk_flags.length
+      ? '<div class="risk">' + it.risk_flags.map((f) => "<div>" + esc(f) + "</div>").join("") + "</div>"
+      : "") +
+    '<div class="card hist"><div class="card-title">Floor за 7 дней, TON</div>' + sparkline(it.price_history) + "</div>" +
+    '<div class="card"><div class="card-title">Продавец</div>' +
+    '<div class="addr">' + esc(it.seller_address) + "</div>" +
+    '<div class="muted small" style="margin-top:6px">Кошелёк создан: ' + esc(it.seller_wallet_age) + "</div>" +
+    "</div>" +
+    '<button class="cta" id="btn-pay">💸 Оплатить напрямую в TON Keeper</button>' +
+    '<div class="p2p-note">P2P-сделка без эскроу: вы переводите TON напрямую продавцу. Бот лишь верифицирует пересылку и фиксирует сделку. Решение всегда за вами.</div>';
+  $("#btn-pay").onclick = showPayment;
+}
+
+// ── экран: оплата / статус сделки ───────────────────────────────────────
+function showPayment() {
+  if (state.deal && ["paid", "completed"].includes(state.deal.status)) { renderDeal(); return; }
+  renderPaymentForm();
+}
+
+function renderPaymentForm() {
+  const it = state.item;
+  screenEl.innerHTML =
+    '<div class="card">' +
+    '<div class="card-title">Ваш кошелёк (TON Keeper, self-custody)</div>' +
+    '<input id="inp-buyer" class="addr-input" placeholder="UQ… / EQ… / 0:…" value="' + esc(state.buyer) + '" autocomplete="off" spellcheck="false">' +
+    '<div class="muted small">С этого адреса отправится пересылка <b style="color:var(--text)">' + esc(it.price_ton) +
+    " TON</b> на кошелёк продавца. Адрес нужен, чтобы бот связал сделку с вами и позже проверил получение NFT.</div>" +
+    '<button class="cta" id="btn-create">Создать сделку</button>' +
+    '<button class="ghost" id="btn-back-nft">← Назад к NFT</button>' +
+    (state.demo ? '<div class="demo-note">ДЕМО-РЕЖИМ: оплата будет симулирована, на blockchain ничего не уйдёт.</div>' : "") +
+    "</div>" +
+    '<div class="p2p-note">P2P-сделка без эскроу: деньги идут напрямую продавцу, без защиты маркетплейса. Проверьте возраст кошелька продавца и редкость предмета.</div>';
+  $("#btn-back-nft").onclick = renderNft;
+  $("#btn-create").onclick = createDeal;
+}
+
+async function createDeal() {
+  const buyer = $("#inp-buyer").value.trim();
+  if (!buyer) { toast("Введите адрес вашего кошелька"); return; }
+  state.buyer = buyer;
+  localStorage.setItem("ns_buyer", buyer);
+  try {
+    if (state.demo) {
+      await sleep(500);
+      state.deal = {
+        deal_id: DEMO_DEAL_ID, status: "awaiting_payment", expires_in_sec: 1800,
+        payment: DEMO_PAYMENT,
+      };
+      state.demoCheckCount = 0;
+    } else {
+      state.deal = await api.post("/api/webapp/otc/create", {
+        item_id: state.item.id,
+        buyer_address: buyer,
+      });
+    }
+    renderDeal();
+  } catch (e) {
+    toast("Ошибка: " + e.message);
+  }
+}
+
+function renderDeal() {
+  const d = state.deal;
+  const p = d.payment;
+  let statusBlock = "";
+  if (d.status === "awaiting_payment") {
+    statusBlock =
+      '<div class="status awaiting"><div class="status-icon">⏳</div>' +
+      "<b>Ждём пересылку…</b>" +
+      '<div class="muted">Отправьте ' + esc(p.amount_ton) + " TON на адрес продавца из TON Keeper.<br>Коммент обязателен: <code>" + esc(p.comment) + "</code></div></div>" +
+      '<button class="cta" id="btn-check">Я оплатил — проверить</button>' +
+      '<button class="ghost" id="btn-cancel">Отменить сделку</button>';
+  } else if (d.status === "paid") {
+    statusBlock =
+      '<div class="status paid"><div class="status-icon">✅</div>' +
+      "<b>Пересылка зафиксирована</b>" +
+      '<div class="muted">' + esc(p.amount_ton) + " TON · адрес " + esc(p.seller_address_short) +
+      (d.paid_tonscan_url ? '<br><a href="' + esc(d.paid_tonscan_url) + '" target="_blank" rel="noopener" style="color:var(--accent2)">смотреть транзакцию</a>' : "") +
+      "</div></div>" +
+      '<div class="muted small" style="margin-bottom:10px">Продавец, увидев перевод, должен перевести NFT на ваш адрес ' + esc(state.buyer.slice(0, 10)) + "…</div>" +
+      '<button class="cta" id="btn-confirmed">Я получил NFT — закрыть сделку</button>';
+  } else if (d.status === "completed") {
+    statusBlock =
+      '<div class="status done"><div class="status-icon">🎉</div>' +
+      "<b>Сделка завершена</b>" +
+      '<div class="muted">' + esc(state.item.name) + " теперь ваш. Сделка " + esc(d.deal_id) + " записана в вашу историю.</div></div>" +
+      '<button class="ghost" id="btn-close-done">Готово</button>';
+  } else if (d.status === "expired") {
+    statusBlock =
+      '<div class="status failed"><div class="status-icon">⌛</div><b>Срок оплаты истёк</b>' +
+      '<div class="muted">Сделка ' + esc(d.deal_id) + " закрыта. Список мог измениться — проверьте цену.</div></div>" +
+      '<button class="cta" id="btn-retry">Создать новую сделку</button>';
+  } else if (d.status === "cancelled") {
+    statusBlock =
+      '<div class="status failed"><div class="status-icon">🚫</div><b>Сделка отменена</b></div>' +
+      '<button class="cta" id="btn-retry">Попробовать снова</button>';
+  }
+
+  const qrBlock = d.status === "awaiting_payment"
+    ? '<div class="card qr-card">' +
+      '<div class="card-title">Оплата · ' + esc(p.amount_ton) + " TON</div>" +
+      '<div class="qr-wrap"><img src="' + p.qr_data_uri + '" alt="TON QR">' +
+      (state.demo ? '<div class="qr-watermark">ДЕМО</div>' : "") +
+      "</div>" +
+      '<div class="pay-row"><span>Кому</span><b class="mono">' + esc(p.seller_address) + '</b><button class="mini" data-copy="' + esc(p.seller_address) + '">⧉</button></div>' +
+      '<div class="pay-row"><span>Сумма</span><b>' + esc(p.amount_ton) + " TON</b></div>" +
+      '<div class="pay-row"><span>Коммент</span><b class="mono">' + esc(p.comment) + '</b><button class="mini" data-copy="' + esc(p.comment) + '">⧉</button></div>' +
+      '<a class="cta" href="' + esc(p.universal_link) + '" target="_blank" rel="noopener">Открыть TON Keeper</a>' +
+      '<a class="ghost" href="' + esc(p.tonkeeper_url) + '">deep-link tonkeeper://</a>' +
+      '<div class="muted small">Сканируйте только этот QR: адрес, сумма и коммент уже подставлены. При оплате появится транзакция в вашем кошельке.</div>' +
+      "</div>"
+    : "";
+
+  screenEl.innerHTML =
+    '<div class="deal">' + statusBlock + qrBlock +
+    '<div class="p2p-note">P2P-сделка без эскроу: бот не держит средства. Если продавец не перевёл NFT после оплаты — обратитесь в поддержку бота с хэшем транзакции.</div>' +
+    "</div>";
+
+  const check = () => { clearInterval(state.pollTimer); state.pollTimer = setInterval(checkPayment, 2500); };
+  const btnCheck = $("#btn-check");
+  if (btnCheck) {
+    btnCheck.onclick = () => { checkPayment(); };
+    check();
+  }
+  const btnCancel = $("#btn-cancel");
+  if (btnCancel) {
+    btnCancel.onclick = async () => {
+      try {
+        if (!state.demo) { Object.assign(state.deal, await api.post("/api/webapp/otc/" + d.deal_id + "/cancel")); }
+        state.deal.status = "cancelled";
+        renderDeal();
+      } catch (e) { toast("Ошибка: " + e.message); }
+    };
+  }
+  const btnConfirmed = $("#btn-confirmed");
+  if (btnConfirmed) {
+    btnConfirmed.onclick = async () => {
+      try {
+        clearInterval(state.pollTimer);
+        if (!state.demo) { Object.assign(state.deal, await api.post("/api/webapp/otc/" + d.deal_id + "/confirm-nft", {})); }
+        state.deal.status = "completed";
+        renderDeal();
+      } catch (e) { toast("Ошибка: " + e.message); }
+    };
+  }
+  const btnRetry = $("#btn-retry");
+  if (btnRetry) { btnRetry.onclick = () => { state.deal = null; renderPaymentForm(); }; }
+  const btnCloseDone = $("#btn-close-done");
+  if (btnCloseDone) { btnCloseDone.onclick = closeApp; }
+}
+
+async function checkPayment() {
+  const d = state.deal;
+  if (!d) return;
+  try {
+    let st;
+    if (state.demo) {
+      await sleep(600);
+      state.demoCheckCount += 1;
+      if (state.demoCheckCount >= 2) {
+        st = {
+          deal_id: d.deal_id, status: "paid", amount_ton: d.payment.amount_ton,
+          seller_address: d.payment.seller_address,
+          paid_tx_hash: "demo_tx_a1b2c3d4e5f6a7b8c9d0", paid_tonscan_url: null,
+        };
+      } else {
+        st = {
+          deal_id: d.deal_id, status: "awaiting_payment",
+          amount_ton: d.payment.amount_ton, seller_address: d.payment.seller_address,
+        };
+      }
+    } else {
+      st = await api.post("/api/webapp/otc/" + d.deal_id + "/check-payment");
+    }
+    Object.assign(d, st);
+    renderDeal();
+  } catch (e) {
+    clearInterval(state.pollTimer);
+    toast("Ошибка: " + e.message);
+  }
+}
+
+// ── роутинг ─────────────────────────────────────────────────────────────
+function route() {
+  const hash = location.hash || "#/";
+  const m = hash.match(/^#\/nft\/(.+)$/);
+  if (m) loadItem(decodeURIComponent(m[1]));
+  else renderList();
+}
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>

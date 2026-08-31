@@ -56,6 +56,12 @@ class Settings(BaseSettings):
     default_max_alerts_per_hour: int = Field(default=20, gt=0)
     alert_latency_target_ms: int = Field(default=3000, gt=0)
 
+    # ── mini app (правка к ТЗ, §11) ─────────────────────────────────────
+    # Публичный URL мини-аппа для WebAppInfo-кнопок бота
+    webapp_url: str = "http://localhost:8080"
+    # Срок оплаты OTC-сделки
+    otc_ttl_minutes: int = Field(default=30, gt=0, le=1440)
+
     @field_validator("log_level")
     @classmethod
     def _normalize_log_level(cls, value: str) -> str:

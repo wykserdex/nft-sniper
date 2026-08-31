@@ -11,9 +11,12 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response
+from fastapi.staticfiles import StaticFiles
 
 from nftsniper import __version__
 from nftsniper.config.settings import Settings, get_settings
+from nftsniper.entrypoints.webapp.api import build_webapp_router
+from nftsniper.entrypoints.webapp.wiring import create_webapp_deps
 from nftsniper.infrastructure.cache.redis import create_redis, ping_redis
 from nftsniper.infrastructure.database.engine import create_database, ping_db
 from nftsniper.observability import metrics
@@ -58,6 +61,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(title="nft-sniper", version=__version__, lifespan=lifespan)
     app.state.settings = effective_settings
+
+    # Mini App (правки к ТЗ, §11): деталка NFT + OTC-оплата в TON Keeper
+    webapp_deps = create_webapp_deps(effective_settings)
+    app.include_router(
+        build_webapp_router(
+            settings=effective_settings,
+            service=webapp_deps.service,
+            dev_transfers=webapp_deps.dev_transfers,
+        )
+    )
+    app.mount(
+        "/webapp",
+        StaticFiles(directory=webapp_deps.static_dir, html=True),
+        name="webapp",
+    )
 
     @app.get("/healthz")
     async def healthz() -> JSONResponse:
