@@ -90,7 +90,7 @@ def match_listing(
         median_7d=score.median_7d,
         sales_7d=score.sales_7d,
         floor_24h_change=score.floor_24h_change,
-        liquidity_spd=score.liquidity,
+        liquidity_spd=score.sales_per_day,
         listing_age_seconds=_listing_age_seconds(listing.listed_at, now),
         priority=candidate_priority(discount=score.discount.value, confidence=score.confidence),
         rarity_rank=item.rarity_rank,

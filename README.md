@@ -170,6 +170,12 @@ nft-sniper/
 **Фазы** (ТЗ §8): 1) MVP — 1,2,3,6,10 + упрощённая оценка; 2) качество — 4,7,8;
 3) масштаб — 5,9,11; 4) зрелость — 12, портфель/PnL, бэктест как gate.
 
+Все 12 агентов реализованы. Конвейер `poll → score → risk → notify` собран
+в `entrypoints/workers/pipeline.py` (`ListingPipeline`). Осталась
+production-обвязка: wiring на реальных адаптерах (GetGems/TonAPI/Fragment) и
+Postgres/Redis-репозиториях, цикл воркеров по расписанию, outcome-tracker
+(TrackOutcome) и ночной calibrator — см. `entrypoints/workers/README.md`.
+
 > ⚠️ GetGems: исторический публичный GraphQL `api.getgems.io/graphql` теперь
 > требует API-ключ и отсылает к официальному `https://getgems.io/public-api`
 > и `https://tonapi.io/`. Поэтому адаптер закрепляет GraphQL-контракт

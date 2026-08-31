@@ -285,6 +285,7 @@ def compute_collection_stats(
         floor_7d_change=change_7d if change_7d is not None else Decimal(0),
         as_of=now,
         floor_history=history,
+        sales_7d=len(window_sales),
     )
     liquidity = LiquidityScore(
         value=normalize_liquidity(spd, target_per_day=liquidity_target_per_day),

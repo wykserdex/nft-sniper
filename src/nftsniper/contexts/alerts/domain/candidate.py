@@ -44,10 +44,11 @@ class ListingScore(ValueObject):
     fair_price: TONAmount
     confidence: Decimal
     discount: Discount
-    liquidity: Decimal  # продаж/день
+    liquidity: Decimal  # нормированный скор 0..1 (матчинг с min_liquidity)
     risk_value: Decimal  # 0..1 (RiskScore.value)
     floor_p5: TONAmount
     median_7d: TONAmount
+    sales_per_day: Decimal = Decimal("0")  # сырое, продаж/день (для рендера)
     risk_flags: tuple[str, ...] = ()
     sales_7d: int = 0
     floor_24h_change: Decimal = Decimal("0")

@@ -77,6 +77,9 @@ quiet hours, приоритизация (сначала лучшие сделк�
 ## Дальше
 
 - Postgres/Redis-реализации репозиториев и SubscriberDirectory;
-- воркеры (entrypoints/workers): poller → valuator (риск-скрининг) →
-  notifier (AlertEngine.deliver_batch) → outcome-tracker (TrackOutcome);
 - `/stats` бота может переехать на `AlertAnalytics` (пока — InMemoryDecisionStore).
+
+Конвейер `poll → score → risk → notify` собран в
+`entrypoints/workers/pipeline.py` (`ListingPipeline`);
+outcome-tracker (TrackOutcome) и calibrator — отдельные воркеры, см.
+`entrypoints/workers/README.md`.

@@ -65,3 +65,4 @@ class CollectionFeatures(ValueObject):
     floor_7d_change: Decimal
     as_of: datetime
     floor_history: tuple[Decimal, ...] = ()  # floor по дням (новые в конце)
+    sales_7d: int = 0  # число продаж за 7 дней (для «Median 7d (N продаж)»)
