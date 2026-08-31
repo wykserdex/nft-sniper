@@ -9,17 +9,16 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from nftsniper.config.settings import get_settings
+from nftsniper.infrastructure.database.engine import Base
+from nftsniper.infrastructure.database import models  # noqa: F401  — регистрирует таблицы
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Когда появятся ORM-модели, зарегистрировать метадату здесь,
-# чтобы работал autogenerate:
-#   from nftsniper.contexts.sources.domain.models import Base
-#   target_metadata = Base.metadata
-target_metadata = None
+# ORM-модели зарегистрированы — autogenerate работает.
+target_metadata = Base.metadata
 
 
 def _dsn() -> str:

@@ -6,8 +6,8 @@
 - calibrator — ночное переобучение весов
 
 ``ListingPipeline`` (pipeline.py) склеивает poller → valuator → notifier
-в один проход по новым листингам: оркестрация поверх use cases,
-метрики/сеть — в entrypoint'е, который гоняет конвейер по расписанию.
+в один проход; ``runner.py`` даёт цикл с метриками, трекер исходов (1h/24h/7d)
+и калибратор; ``wiring.py`` собирает реальные адаптеры + Postgres/Redis.
 """
 
 from nftsniper.entrypoints.workers.pipeline import (
@@ -15,5 +15,22 @@ from nftsniper.entrypoints.workers.pipeline import (
     PipelineReport,
     getgems_item_url,
 )
+from nftsniper.entrypoints.workers.runner import (
+    CalibrationRecommendation,
+    OutcomeTracker,
+    run_calibrator_once,
+    run_pipeline_loop,
+)
+from nftsniper.entrypoints.workers.wiring import WorkerComponents, build_worker
 
-__all__ = ["ListingPipeline", "PipelineReport", "getgems_item_url"]
+__all__ = [
+    "CalibrationRecommendation",
+    "ListingPipeline",
+    "OutcomeTracker",
+    "PipelineReport",
+    "WorkerComponents",
+    "build_worker",
+    "getgems_item_url",
+    "run_calibrator_once",
+    "run_pipeline_loop",
+]

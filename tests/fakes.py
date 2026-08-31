@@ -372,6 +372,9 @@ class InMemoryAlertRepository:
     async def list_by_user(self, user_id: str) -> Sequence[Alert]:
         return [alert for alert in self._data.values() if alert.user_id == user_id]
 
+    async def list_recent(self, since: datetime) -> Sequence[Alert]:
+        return [alert for alert in self._data.values() if alert.sent_at >= since]
+
     async def find_recent_by_dedup(
         self, user_id: str, dedup_key: str, since_ts: datetime
     ) -> Alert | None:

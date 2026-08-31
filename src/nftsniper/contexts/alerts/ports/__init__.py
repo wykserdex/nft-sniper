@@ -36,6 +36,10 @@ class AlertRepository(Protocol):
         """Все алерты пользователя (для аналитики)."""
         ...
 
+    async def list_recent(self, since: datetime) -> Sequence[Alert]:
+        """Алерты с ``since`` по всем пользователям (трекинг исходов)."""
+        ...
+
     async def find_recent_by_dedup(
         self, user_id: str, dedup_key: str, since_ts: datetime
     ) -> Alert | None:

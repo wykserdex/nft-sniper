@@ -3,6 +3,7 @@
 Команды:
 - ``serve``   — HTTP-сервер с health-эндпоинтами (liveness/readiness/metrics);
 - ``check``   — проверка связности с Postgres и Redis (exit 0/1);
+- ``worker``  — конвейер poll → score → risk → notify (по расписанию);
 - ``version`` — версия пакета.
 """
 
@@ -14,8 +15,11 @@ import uvicorn
 
 from nftsniper import __version__
 from nftsniper.bootstrap import create_app
-from nftsniper.config.settings import get_settings
+from nftsniper.config.settings import Settings, get_settings
 from nftsniper.entrypoints.bot.main import run_bot
+from nftsniper.entrypoints.workers.pipeline import PipelineReport
+from nftsniper.entrypoints.workers.runner import run_pipeline_loop
+from nftsniper.entrypoints.workers.wiring import build_worker
 from nftsniper.infrastructure.cache.redis import create_redis, ping_redis
 from nftsniper.infrastructure.database.engine import create_database, ping_db
 from nftsniper.observability.logging import setup_logging
@@ -41,7 +45,31 @@ def _build_parser() -> argparse.ArgumentParser:
     bot.add_argument(
         "--log-json", action="store_true", help="форсировать JSON-логи независимо от env"
     )
+    worker = subparsers.add_parser(
+        "worker", help="конвейер poll → score → risk → notify (по расписанию)"
+    )
+    worker.add_argument("--collection", required=True, help="on-chain-адрес коллекции для опроса")
+    worker.add_argument("--once", action="store_true", help="один цикл вместо бесконечного")
+    worker.add_argument(
+        "--interval", type=int, default=3, help="интервал опроса, сек (по умолчанию 3)"
+    )
+    worker.add_argument(
+        "--log-json", action="store_true", help="форсировать JSON-логи независимо от env"
+    )
     return parser
+
+
+async def _run_worker(settings: Settings, *, collection: str, once: bool, interval: int) -> None:
+    """Конвейер: один цикл (--once) или бесконечный (по умолчанию)."""
+    components = build_worker(settings)
+
+    async def poll() -> PipelineReport:
+        return await components.pipeline.run(collection)
+
+    if once:
+        await run_pipeline_loop(poll, cycles=1, poll_interval_seconds=0)
+    else:
+        await run_pipeline_loop(poll, poll_interval_seconds=interval)
 
 
 async def _run_check() -> int:
@@ -86,6 +114,18 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "bot":
         setup_logging(settings.log_level, settings.log_json or args.log_json)
         asyncio.run(run_bot(settings))
+        return 0
+
+    if args.command == "worker":
+        setup_logging(settings.log_level, settings.log_json or args.log_json)
+        asyncio.run(
+            _run_worker(
+                settings,
+                collection=args.collection,
+                once=args.once,
+                interval=args.interval,
+            )
+        )
         return 0
 
     host = args.host if args.host is not None else settings.http_host
