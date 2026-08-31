@@ -144,6 +144,7 @@ nft-sniper/
 |---|---|---|
 | 1 | Skeleton & Infra: каркас, pyproject, ruff/mypy strict, compose, settings, логи, health, CI | ✅ |
 | — | Mini App + OTC-оплата в TON Keeper (правка к ТЗ, §11) | ✅ |
+| 2 | Domain & Ports: TON/nanoTON/USD (Decimal), Listing/Collection/Item/SaleEvent, FairPriceEstimate, Discount, RiskFlag, порты (Marketplace/Chain/PriceModel/Notifier), события | ✅ |
 | 2 | Domain & Ports: деньги, сущности, порты | ⬜ |
 | 3 | GetGems Adapter | ⬜ |
 | 4 | Chain Adapter (TonAPI/TonCenter) | ⬜ |
