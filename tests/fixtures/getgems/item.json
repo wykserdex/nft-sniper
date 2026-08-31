@@ -1,0 +1,32 @@
+{
+  "data": {
+    "nftItemsByAddresses": [
+      {
+        "address": "EQDBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwS2C",
+        "index": 888,
+        "name": "Anonymous Telegram Number #888",
+        "collectionAddress": "EQChoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhodWi",
+        "ownerAddress": "EQDR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0QZy",
+        "attributes": [
+          {
+            "traitType": "Number",
+            "value": "888"
+          },
+          {
+            "traitType": "Pattern",
+            "value": "Repeater"
+          }
+        ],
+        "sale": {
+          "__typename": "NftSaleSimple",
+          "address": "EQDx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8VGS",
+          "fullPrice": "120000000000",
+          "createdAt": "2026-08-31T16:40:00+00:00",
+          "endsAt": null,
+          "owner": "EQDR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0QZy",
+          "marketplace": "getgems"
+        }
+      }
+    ]
+  }
+}

@@ -15,6 +15,7 @@ import uvicorn
 from nftsniper import __version__
 from nftsniper.bootstrap import create_app
 from nftsniper.config.settings import get_settings
+from nftsniper.entrypoints.bot.main import run_bot
 from nftsniper.infrastructure.cache.redis import create_redis, ping_redis
 from nftsniper.infrastructure.database.engine import create_database, ping_db
 from nftsniper.observability.logging import setup_logging
@@ -36,6 +37,10 @@ def _build_parser() -> argparse.ArgumentParser:
 
     subparsers.add_parser("check", help="проверка связности с Postgres и Redis")
     subparsers.add_parser("version", help="печать версии")
+    bot = subparsers.add_parser("bot", help="Telegram-бот (long polling)")
+    bot.add_argument(
+        "--log-json", action="store_true", help="форсировать JSON-логи независимо от env"
+    )
     return parser
 
 
@@ -77,6 +82,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "check":
         setup_logging(settings.log_level, settings.log_json)
         return asyncio.run(_run_check())
+
+    if args.command == "bot":
+        setup_logging(settings.log_level, settings.log_json or args.log_json)
+        asyncio.run(run_bot(settings))
+        return 0
 
     host = args.host if args.host is not None else settings.http_host
     port = args.port if args.port is not None else settings.http_port

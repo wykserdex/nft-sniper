@@ -1,0 +1,54 @@
+{
+  "data": {
+    "nftSalesOnCollection": [
+      {
+        "__typename": "NftSaleSimple",
+        "txHash": "tx-s1",
+        "timestamp": "2026-08-31T10:00:00+00:00",
+        "price": "214000000000",
+        "buyer": "EQDh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4Xpi",
+        "seller": "EQDR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0QZy",
+        "nft": {
+          "address": "EQDBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwS2C",
+          "collectionAddress": "EQChoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhodWi"
+        }
+      },
+      {
+        "__typename": "NftSaleSimple",
+        "txHash": "tx-s2",
+        "timestamp": "2026-08-30T12:00:00+00:00",
+        "price": "205000000000",
+        "buyer": "EQDi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4n2j",
+        "seller": "EQDS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gGz",
+        "nft": {
+          "address": "EQDCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwipD",
+          "collectionAddress": "EQChoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhodWi"
+        }
+      },
+      {
+        "__typename": "NftSaleSimple",
+        "txHash": "tx-s3",
+        "timestamp": "2026-08-29T09:00:00+00:00",
+        "price": "199000000000",
+        "buyer": "EQDj4-Pj4-Pj4-Pj4-Pj4-Pj4-Pj4-Pj4-Pj4-Pj4-Pj438c",
+        "seller": "EQDT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0wMM",
+        "nft": {
+          "address": "EQDDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDwyj8",
+          "collectionAddress": "EQChoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhodWi"
+        }
+      },
+      {
+        "__typename": "NftSaleSimple",
+        "txHash": "tx-s4",
+        "timestamp": "2026-08-28T08:00:00+00:00",
+        "price": "190000000000",
+        "buyer": "EQDh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4Xpi",
+        "seller": "EQDS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gGz",
+        "nft": {
+          "address": "EQDBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwS2C",
+          "collectionAddress": "EQChoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhodWi"
+        }
+      }
+    ]
+  }
+}

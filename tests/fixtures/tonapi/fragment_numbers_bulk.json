@@ -1,0 +1,42 @@
+{
+  "nft_items": [
+    {
+      "address": "0:6b6fb936d922d194f3b2cce1babc2eca2ab75a1a9333111cb8524b4e2c856184",
+      "index": 1,
+      "owner": {
+        "address": "0:0000000000000000000000000000000000000000000000000000000000000201",
+        "is_scam": false,
+        "is_wallet": true
+      },
+      "collection": {
+        "address": "0:4cac1688d0ed22d0a3db653285812b33d8c23fa9220c0dde5f7ab056b27e17cf",
+        "name": "fixture",
+        "description": ""
+      },
+      "verified": true,
+      "metadata": {
+        "name": "+888 0000 1312"
+      },
+      "previews": []
+    },
+    {
+      "address": "0:7fc834228cd0ff90cc1af82659dc176a4b6d575ad155edf80276327932abfdf2",
+      "index": 1,
+      "owner": {
+        "address": "0:0000000000000000000000000000000000000000000000000000000000000202",
+        "is_scam": false,
+        "is_wallet": true
+      },
+      "collection": {
+        "address": "0:4cac1688d0ed22d0a3db653285812b33d8c23fa9220c0dde5f7ab056b27e17cf",
+        "name": "fixture",
+        "description": ""
+      },
+      "verified": true,
+      "metadata": {
+        "name": "+888 0707 7007"
+      },
+      "previews": []
+    }
+  ]
+}

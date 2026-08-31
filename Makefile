@@ -1,5 +1,5 @@
-.PHONY: install format lint typecheck test test-unit test-integration \
-        compose-up compose-down migrate revision run check
+.PHONY: install format lint typecheck test test-unit test-contract \
+        test-integration compose-up compose-down migrate revision run check
 
 install:
 	pip install -e ".[dev]"
@@ -22,6 +22,9 @@ test:
 
 test-unit:
 	pytest tests/unit -v
+
+test-contract:
+	pytest tests/contract -v
 
 test-integration:
 	pytest tests/integration -v

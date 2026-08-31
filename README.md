@@ -37,6 +37,17 @@ curl localhost:8080/metrics   # Prometheus
 nftsniper check               # CLI-верификация связности (exit 0/1)
 ```
 
+## Telegram-бот
+
+```bash
+NFT_TELEGRAM_BOT_TOKEN=123456:ABC nftsniper bot
+```
+
+Команды: `/start`, `/help`, `/settings` (FSM-пороги и язык), `/watchlist`,
+`/stats`, `/mute`, `/pause`, `/resume`. Алерт рендерится по формату ТЗ §1,
+кнопки-решения: Взять (диплинк, не покупка) / Скип / Следить / Мьют коллекции.
+До  данные живут в in-memory адаптерах (`entrypoints/bot/adapters.py`).
+
 ## Mini App: деталка NFT + оплата в TON Keeper (правка к ТЗ, §11)
 
 Telegram Mini App внутри бота: детальный просмотр NFT (изображение, трейты,
@@ -111,7 +122,7 @@ nft-sniper/
 │   ├── entrypoints/
 │   │   ├── bot/               # aiogram 3
 │   │   ├── workers/           # poller, valuator, notifier, calibrator
-│   │   └── cli/               # nftsniper serve | check | version
+│   │   └── cli/               # nftsniper serve | check | bot | version
 │   ├── config/                # Pydantic Settings (env-префикс NFT_)
 │   └── observability/         # structlog-логи, Prometheus-метрики
 ├── migrations/                # alembic (async env.py)
@@ -145,17 +156,22 @@ nft-sniper/
 | 1 | Skeleton & Infra: каркас, pyproject, ruff/mypy strict, compose, settings, логи, health, CI | ✅ |
 | — | Mini App + OTC-оплата в TON Keeper (правка к ТЗ, §11) | ✅ |
 | 2 | Domain & Ports: TON/nanoTON/USD (Decimal), Listing/Collection/Item/SaleEvent, FairPriceEstimate, Discount, RiskFlag, порты (Marketplace/Chain/PriceModel/Notifier), события | ✅ |
-| 2 | Domain & Ports: деньги, сущности, порты | ⬜ |
-| 3 | GetGems Adapter | ⬜ |
-| 4 | Chain Adapter (TonAPI/TonCenter) | ⬜ |
-| 5 | Fragment Adapter | ⬜ |
-| 6 | Statistics Engine (price_stats) | ⬜ |
+| 3 | GetGems Adapter: MarketplacePort поверх GraphQL, пагинация, retry/breaker, rate limit, нормализация; use cases PollListings/IngestSale/BackfillHistory; контрактные тесты на фикстурах | ✅ |
+| 4 | Chain Adapter (TonAPI): владелец, трансферы, sale-контракты, возраст кошелька, сверка цен с маркетплейсом | ✅ |
+| 5 | Fragment Adapter: номера/юзернеймы — on-chain первичен, парсинг fragment.com fallback, флаг отключения, rate limit + кэш, деградация | ✅ |
+| 6 | Statistics Engine (price_stats): floor P5, медиана с затуханием, объёмы, sales_per_day, liquidity, momentum 24h/7d; пересчёт `RebuildStats`; perf SLA на 10k предметов | ✅ |
 | 7 | Valuation Engine (ансамбль) | ⬜ |
 | 8 | Risk & Anti-Scam | ⬜ |
 | 9 | Alert Engine | ⬜ |
-| 10 | Telegram Bot (aiogram 3) | ⬜ |
+| 10 | Telegram Bot (aiogram 3): /start /settings (FSM) /watchlist /stats /mute /pause, рендер алерта по ТЗ §1, кнопки-решения, локализация RU/EN, TelegramNotifier | ✅ |
 | 11 | Feedback Loop & Analytics | ⬜ |
 | 12 | Observability & Backtest | ⬜ |
 
 **Фазы** (ТЗ §8): 1) MVP — 1,2,3,6,10 + упрощённая оценка; 2) качество — 4,7,8;
 3) масштаб — 5,9,11; 4) зрелость — 12, портфель/PnL, бэктест как gate.
+
+> ⚠️ GetGems: исторический публичный GraphQL `api.getgems.io/graphql` теперь
+> требует API-ключ и отсылает к официальному `https://getgems.io/public-api`
+> и `https://tonapi.io/`. Поэтому адаптер закрепляет GraphQL-контракт
+> записанными фикстурами `tests/fixtures/getgems/*.json`; при смене схемы
+> обновляй их `scripts/record_getgems_fixtures.py` (нужен `NFT_GETGEMS_API_KEY`).

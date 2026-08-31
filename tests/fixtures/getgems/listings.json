@@ -1,0 +1,113 @@
+{
+  "data": {
+    "getNftItemsByCollectionOnSale": {
+      "items": [
+        {
+          "address": "EQDBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwS2C",
+          "index": 888,
+          "name": "Anonymous Telegram Number #888",
+          "collectionAddress": "EQChoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhodWi",
+          "ownerAddress": "EQDR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0QZy",
+          "attributes": [
+            {
+              "traitType": "Number",
+              "value": "888"
+            }
+          ],
+          "sale": {
+            "__typename": "NftSaleSimple",
+            "address": "EQDx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8VGS",
+            "fullPrice": "120000000000",
+            "createdAt": "2026-08-31T16:40:00+00:00",
+            "endsAt": null,
+            "owner": "EQDR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0QZy",
+            "marketplace": "getgems"
+          }
+        },
+        {
+          "address": "EQDCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwipD",
+          "index": 777,
+          "name": "Anonymous Telegram Number #777",
+          "collectionAddress": "EQChoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhodWi",
+          "ownerAddress": "EQDS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gGz",
+          "attributes": [
+            {
+              "traitType": "Number",
+              "value": "777"
+            }
+          ],
+          "sale": {
+            "__typename": "NftSaleSimple",
+            "address": "EQDy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8lZT",
+            "fullPrice": "130000000000",
+            "createdAt": "2026-08-31T16:39:00+00:00",
+            "endsAt": null,
+            "owner": "EQDS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gGz",
+            "marketplace": "getgems"
+          }
+        },
+        {
+          "address": "EQDDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDwyj8",
+          "index": 42,
+          "name": "Anonymous Telegram Number #42",
+          "collectionAddress": "EQChoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhodWi",
+          "ownerAddress": "EQDT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0wMM",
+          "attributes": [
+            {
+              "traitType": "Number",
+              "value": "42"
+            }
+          ],
+          "sale": {
+            "__typename": "NftSaleAuction",
+            "address": "EQDz8_Pz8_Pz8_Pz8_Pz8_Pz8_Pz8_Pz8_Pz8_Pz8_Pz81Ts",
+            "minBid": "140000000000",
+            "maxBid": "150000000000",
+            "status": "active",
+            "createdAt": "2026-08-31T16:38:00+00:00",
+            "endsAt": "2026-09-07T16:38:00+00:00",
+            "owner": "EQDT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0wMM",
+            "marketplace": "getgems"
+          }
+        },
+        {
+          "address": "EQDFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxSd-",
+          "index": 555,
+          "name": "Anonymous Telegram Number #555",
+          "collectionAddress": "EQChoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhodWi",
+          "ownerAddress": "EQDR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0QZy",
+          "attributes": [
+            {
+              "traitType": "Number",
+              "value": "555"
+            }
+          ],
+          "sale": null
+        },
+        {
+          "address": "EQDJycnJycnJycnJycnJycnJycnJycnJycnJycnJycnJyTh6",
+          "index": 999,
+          "name": "Anonymous Telegram Number #999",
+          "collectionAddress": "EQChoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhodWi",
+          "ownerAddress": "EQDR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0QZy",
+          "attributes": [
+            {
+              "traitType": "Number",
+              "value": "999"
+            }
+          ],
+          "sale": {
+            "__typename": "NftSaleSimple",
+            "address": "EQD5-fn5-fn5-fn5-fn5-fn5-fn5-fn5-fn5-fn5-fn5-URq",
+            "fullPrice": "99000000000",
+            "createdAt": "2026-08-31T16:37:00+00:00",
+            "endsAt": null,
+            "owner": "EQDR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0QZy",
+            "marketplace": "getgems"
+          }
+        }
+      ],
+      "cursor": "NEXT_CURSOR"
+    }
+  }
+}

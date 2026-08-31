@@ -1,0 +1,42 @@
+{
+  "nft_items": [
+    {
+      "address": "0:000000000000000000000000000000000000000000000000000000000000010a",
+      "index": 1,
+      "owner": {
+        "address": "0:0000000000000000000000000000000000000000000000000000000000000203",
+        "is_scam": false,
+        "is_wallet": true
+      },
+      "collection": {
+        "address": "0:80d78a35f955a14b679faa887ff4cd5bfc0f43b4a4eea2a7e6927f3701b273c0",
+        "name": "fixture",
+        "description": ""
+      },
+      "verified": true,
+      "metadata": {
+        "name": "blackhat"
+      },
+      "previews": []
+    },
+    {
+      "address": "0:000000000000000000000000000000000000000000000000000000000000010b",
+      "index": 1,
+      "owner": {
+        "address": "0:0000000000000000000000000000000000000000000000000000000000000204",
+        "is_scam": false,
+        "is_wallet": true
+      },
+      "collection": {
+        "address": "0:80d78a35f955a14b679faa887ff4cd5bfc0f43b4a4eea2a7e6927f3701b273c0",
+        "name": "fixture",
+        "description": ""
+      },
+      "verified": true,
+      "metadata": {
+        "name": "board"
+      },
+      "previews": []
+    }
+  ]
+}

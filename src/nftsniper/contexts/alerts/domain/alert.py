@@ -70,10 +70,20 @@ class Decision(Entity):
 
 @dataclass(frozen=True, slots=True)
 class AlertButton(ValueObject):
-    """Кнопка inline-клавиатуры."""
+    """Кнопка inline-клавиатуры.
+
+    ``callback_data`` — для кнопок-решений; ``url`` — для кнопок-ссылок
+    (диплинк на маркетплейс, ТЗ §1). Ровно одно из двух заполнено.
+    """
 
     text: str
-    callback_data: str
+    callback_data: str | None = None
+    url: str | None = None
+
+    def __post_init__(self) -> None:
+        if (self.callback_data is None) == (self.url is None):
+            msg = "у кнопки должно быть ровно одно из: callback_data или url"
+            raise ValueError(msg)
 
 
 @dataclass(frozen=True, slots=True)

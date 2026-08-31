@@ -1,5 +1,10 @@
-"""Адаптер fragment: реализация MarketplacePort/ChainPort.
+"""Адаптер Fragment: номера/юзернеймы — on-chain первичен, парсинг fallback."""
 
-Нормализация в доменные модели, пагинация, retry — через
-infrastructure.http.ResilientHttpClient.
-"""
+from nftsniper.contexts.sources.adapters.fragment.adapter import FragmentAdapter, parse_asset_node
+from nftsniper.contexts.sources.adapters.fragment.factory import build_fragment_adapter
+
+__all__ = [
+    "FragmentAdapter",
+    "build_fragment_adapter",
+    "parse_asset_node",
+]

@@ -1,8 +1,14 @@
-"""Домен контекста sources: Listing, Collection, Item, SaleEvent, on-chain."""
+"""Домен контекста sources: Listing, Collection, Item, SaleEvent, on-chain, fragment."""
 
-from nftsniper.contexts.sources.domain.chain import NftTransfer, WalletInfo
+from nftsniper.contexts.sources.domain.chain import NftTransfer, SaleVerification, WalletInfo
 from nftsniper.contexts.sources.domain.collection import Collection
 from nftsniper.contexts.sources.domain.events import ListingDiscovered, SaleIngested
+from nftsniper.contexts.sources.domain.fragment import (
+    FragmentAsset,
+    FragmentAuction,
+    FragmentKind,
+    FragmentStatus,
+)
 from nftsniper.contexts.sources.domain.item import Item, Trait, TraitSet
 from nftsniper.contexts.sources.domain.listing import Listing, ListingStatus
 from nftsniper.contexts.sources.domain.marketplace import Marketplace
@@ -10,6 +16,10 @@ from nftsniper.contexts.sources.domain.sale import SaleEvent
 
 __all__ = [
     "Collection",
+    "FragmentAsset",
+    "FragmentAuction",
+    "FragmentKind",
+    "FragmentStatus",
     "Item",
     "Listing",
     "ListingDiscovered",
@@ -18,6 +28,7 @@ __all__ = [
     "NftTransfer",
     "SaleEvent",
     "SaleIngested",
+    "SaleVerification",
     "Trait",
     "TraitSet",
     "WalletInfo",

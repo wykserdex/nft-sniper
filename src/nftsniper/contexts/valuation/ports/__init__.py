@@ -27,6 +27,10 @@ class FeatureStorePort(Protocol):
 
     async def load(self, collection_id: str) -> CollectionFeatures | None: ...
 
+    async def save(self, features: CollectionFeatures) -> None:
+        """Сохранить снимок price_stats (upsert по collection_id)."""
+        ...
+
 
 class ValuationRepository(Protocol):
     async def save(self, listing_id: str, estimate: FairPriceEstimate) -> str:

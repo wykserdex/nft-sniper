@@ -1,0 +1,19 @@
+{
+  "address": "0:30ed366b91e98c93f9323aabfd8a97947d7b4524e28ccfb5d202f24abeee55c3",
+  "index": 1,
+  "owner": {
+    "address": "0:759ade469adc736e3a96eb5201092738437855b6817472578e9f5bc76b5cb5d6",
+    "is_scam": false,
+    "is_wallet": true
+  },
+  "collection": {
+    "address": "0:3e18ac91abe8725c2c34074a03c00369012abdaa5e05435a4e311406f35490f8",
+    "name": "Test Collection",
+    "description": "fixture"
+  },
+  "verified": true,
+  "metadata": {
+    "name": "Test #1"
+  },
+  "previews": []
+}

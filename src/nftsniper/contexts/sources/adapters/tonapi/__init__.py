@@ -1,5 +1,15 @@
-"""Адаптер tonapi: реализация MarketplacePort/ChainPort.
+"""Адаптер TonAPI: реализация ChainPort (on-chain источник истины)."""
 
-Нормализация в доменные модели, пагинация, retry — через
-infrastructure.http.ResilientHttpClient.
-"""
+from nftsniper.contexts.sources.adapters.tonapi.adapter import TonapiChainAdapter
+from nftsniper.contexts.sources.adapters.tonapi.exceptions import (
+    TonapiError,
+    TonapiResponseError,
+)
+from nftsniper.contexts.sources.adapters.tonapi.factory import build_tonapi_adapter
+
+__all__ = [
+    "TonapiChainAdapter",
+    "TonapiError",
+    "TonapiResponseError",
+    "build_tonapi_adapter",
+]

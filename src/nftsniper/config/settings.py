@@ -50,6 +50,42 @@ class Settings(BaseSettings):
     getgems_api_key: SecretStr | None = None
     tonapi_key: SecretStr | None = None
 
+    # ── GetGems ───────────────────────────────────────────────
+    getgems_endpoint: str = "https://api.getgems.io/graphql"
+    getgems_rate_limit_rps: Decimal = Field(default=Decimal("5"), gt=0)
+    getgems_rate_limit_burst: Decimal = Field(default=Decimal("10"), gt=0)
+    getgems_page_size: int = Field(default=100, ge=1, le=200)
+    getgems_timeout_seconds: int = Field(default=10, gt=0)
+
+    # ── TonAPI ────────────────────────────────────────────────
+    tonapi_endpoint: str = "https://tonapi.io"
+    tonapi_rate_limit_rps: Decimal = Field(default=Decimal("2"), gt=0)
+    tonapi_rate_limit_burst: Decimal = Field(default=Decimal("4"), gt=0)
+    tonapi_transfers_page_size: int = Field(default=50, ge=1, le=200)
+    tonapi_timeout_seconds: int = Field(default=10, gt=0)
+    # окно событий кошелька для оценки входящего объёма (risk)
+    tonapi_wallet_inflow_window: int = Field(default=100, ge=1, le=1000)
+    # ±секунды вокруг продажи при поиске on-chain-трансфера
+    tonapi_sale_window_seconds: int = Field(default=300, ge=0)
+    # допуск расхождения on-chain/API цены (1% по ТЗ §3)
+    tonapi_price_mismatch_tolerance: Decimal = Field(default=Decimal("0.01"), ge=0, le=1)
+
+    # ── Fragment: номера/юзернеймы ───────────────────────────
+    # источник можно отключить флагом (ТЗ §7); парсинг fragment.com — строго
+    # по частоте (rate limit) и с TTL-кэшем
+    fragment_enabled: bool = True
+    fragment_endpoint: str = "https://fragment.com"
+    fragment_rate_limit_rps: Decimal = Field(default=Decimal("0.5"), gt=0)
+    fragment_rate_limit_burst: Decimal = Field(default=Decimal("1"), gt=0)
+    fragment_cache_ttl_seconds: int = Field(default=60, ge=0)
+    fragment_page_size: int = Field(default=100, ge=1, le=500)
+    fragment_timeout_seconds: int = Field(default=10, gt=0)
+    # on-chain (TonAPI) первичен; scrape — fallback/дополнение
+    fragment_prefer_on_chain: bool = True
+    # on-chain адреса коллекций Fragment (юзернеймы / номера)
+    fragment_username_collection: str | None = None
+    fragment_number_collection: str | None = None
+
     # ── дефолты алертов (переопределяются настройками пользователя) ─────
     default_min_discount: Decimal = Field(default=Decimal("0.25"), gt=0, lt=1)
     default_min_confidence: Decimal = Field(default=Decimal("0.50"), ge=0, le=1)

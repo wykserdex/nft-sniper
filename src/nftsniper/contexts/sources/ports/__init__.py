@@ -8,7 +8,7 @@ from collections.abc import Sequence
 from datetime import datetime
 from typing import Protocol
 
-from nftsniper.contexts.sources.domain.chain import NftTransfer, WalletInfo
+from nftsniper.contexts.sources.domain.chain import NftTransfer, SaleVerification, WalletInfo
 from nftsniper.contexts.sources.domain.collection import Collection
 from nftsniper.contexts.sources.domain.item import Item
 from nftsniper.contexts.sources.domain.listing import Listing
@@ -39,8 +39,13 @@ class MarketplacePort(Protocol):
         collection_address: str,
         since: datetime,
         limit: int = 500,
+        until: datetime | None = None,
     ) -> Sequence[SaleEvent]:
-        """История продаж коллекции с даты ``since``."""
+        """История продаж коллекции с даты ``since`` (включая), не позже ``until``.
+
+        Продажи newest-first; ``until`` нужен BackfillHistory, чтобы двигаться
+        окнами вглубь истории (lower bound без upper bound не даёт пагинации).
+        """
         ...
 
 
@@ -65,5 +70,14 @@ class ChainPort(Protocol):
         ...
 
     async def verify_sale(self, sale: SaleEvent) -> bool:
-        """Сверка продажи с on-chain (расхождение >1% помечается флагом, ТЗ §3)."""
+        """Сверка одной продажи с on-chain (True = цена сходится, ТЗ §3)."""
+        ...
+
+    async def verify_sales(self, sales: Sequence[SaleEvent]) -> Sequence[SaleVerification]:
+        """Сверка выборки продаж с on-chain (ТЗ §3).
+
+        Для каждой продажи находится on-chain-трансфер предмета и сравнивается
+        цена. Расхождение больше допуска (по умолчанию 1%) помечается флагом:
+        ``SaleVerification.matches=False`` + ``discrepancy``.
+        """
         ...

@@ -1,0 +1,154 @@
+{
+  "events": [
+    {
+      "event_id": "sale1hash",
+      "account": {
+        "address": "0:30ed366b91e98c93f9323aabfd8a97947d7b4524e28ccfb5d202f24abeee55c3",
+        "is_scam": false,
+        "is_wallet": true
+      },
+      "timestamp": 1753000000,
+      "actions": [
+        {
+          "type": "NftItemTransfer",
+          "status": "ok",
+          "NftItemTransfer": {
+            "sender": {
+              "address": "0:1111111111111111111111111111111111111111111111111111111111111111",
+              "is_scam": false,
+              "is_wallet": true
+            },
+            "recipient": {
+              "address": "0:2222222222222222222222222222222222222222222222222222222222222222",
+              "is_scam": false,
+              "is_wallet": true
+            },
+            "nft": "0:30ed366b91e98c93f9323aabfd8a97947d7b4524e28ccfb5d202f24abeee55c3"
+          },
+          "simple_preview": {},
+          "base_transactions": [
+            "sale1hash"
+          ]
+        },
+        {
+          "type": "TonTransfer",
+          "status": "ok",
+          "TonTransfer": {
+            "sender": {
+              "address": "0:2222222222222222222222222222222222222222222222222222222222222222",
+              "is_scam": false,
+              "is_wallet": true
+            },
+            "recipient": {
+              "address": "0:1111111111111111111111111111111111111111111111111111111111111111",
+              "is_scam": false,
+              "is_wallet": true
+            },
+            "amount": 10000000000
+          },
+          "simple_preview": {},
+          "base_transactions": []
+        }
+      ],
+      "is_scam": false,
+      "lt": 1753000000,
+      "in_progress": false,
+      "extra": 0,
+      "progress": 0
+    },
+    {
+      "event_id": "sale2hash",
+      "account": {
+        "address": "0:30ed366b91e98c93f9323aabfd8a97947d7b4524e28ccfb5d202f24abeee55c3",
+        "is_scam": false,
+        "is_wallet": true
+      },
+      "timestamp": 1753003600,
+      "actions": [
+        {
+          "type": "NftItemTransfer",
+          "status": "ok",
+          "NftItemTransfer": {
+            "sender": {
+              "address": "0:3333333333333333333333333333333333333333333333333333333333333333",
+              "is_scam": false,
+              "is_wallet": true
+            },
+            "recipient": {
+              "address": "0:4444444444444444444444444444444444444444444444444444444444444444",
+              "is_scam": false,
+              "is_wallet": true
+            },
+            "nft": "0:30ed366b91e98c93f9323aabfd8a97947d7b4524e28ccfb5d202f24abeee55c3"
+          },
+          "simple_preview": {},
+          "base_transactions": [
+            "sale2hash"
+          ]
+        },
+        {
+          "type": "TonTransfer",
+          "status": "ok",
+          "TonTransfer": {
+            "sender": {
+              "address": "0:4444444444444444444444444444444444444444444444444444444444444444",
+              "is_scam": false,
+              "is_wallet": true
+            },
+            "recipient": {
+              "address": "0:3333333333333333333333333333333333333333333333333333333333333333",
+              "is_scam": false,
+              "is_wallet": true
+            },
+            "amount": 5000000000
+          },
+          "simple_preview": {},
+          "base_transactions": []
+        }
+      ],
+      "is_scam": false,
+      "lt": 1753003600,
+      "in_progress": false,
+      "extra": 0,
+      "progress": 0
+    },
+    {
+      "event_id": "gifthash",
+      "account": {
+        "address": "0:30ed366b91e98c93f9323aabfd8a97947d7b4524e28ccfb5d202f24abeee55c3",
+        "is_scam": false,
+        "is_wallet": true
+      },
+      "timestamp": 1753007200,
+      "actions": [
+        {
+          "type": "NftItemTransfer",
+          "status": "ok",
+          "NftItemTransfer": {
+            "sender": {
+              "address": "0:4444444444444444444444444444444444444444444444444444444444444444",
+              "is_scam": false,
+              "is_wallet": true
+            },
+            "recipient": {
+              "address": "0:759ade469adc736e3a96eb5201092738437855b6817472578e9f5bc76b5cb5d6",
+              "is_scam": false,
+              "is_wallet": true
+            },
+            "nft": "0:30ed366b91e98c93f9323aabfd8a97947d7b4524e28ccfb5d202f24abeee55c3"
+          },
+          "simple_preview": {},
+          "base_transactions": [
+            "gifthash"
+          ]
+        }
+      ],
+      "is_scam": false,
+      "lt": 1753007200,
+      "in_progress": false,
+      "extra": 0,
+      "progress": 0
+    }
+  ],
+  "next_from": 0
+}

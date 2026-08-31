@@ -1,0 +1,20 @@
+{
+  "events": [
+    {
+      "event_id": "firsthash",
+      "account": {
+        "address": "0:eb212ce9fe6df965ebe7202989ef86998739b034c0a87a76487a457eddcbd8c7",
+        "is_scam": false,
+        "is_wallet": true
+      },
+      "timestamp": 1700000000,
+      "actions": [],
+      "is_scam": false,
+      "lt": 1,
+      "in_progress": false,
+      "extra": 0,
+      "progress": 0
+    }
+  ],
+  "next_from": 0
+}
