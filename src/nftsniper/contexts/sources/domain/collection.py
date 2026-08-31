@@ -16,6 +16,8 @@ class Collection(Entity):
 
     ``risk_score`` (0..1, None = не оценивалась) — из risk-контекста;
     храним как Decimal, чтобы не создавать зависимость contexts → contexts.
+    ``royalty_bps`` — роялти коллекции в базисных пунктах (1/10000),
+    для учёта в реальном выходе (ТЗ §4).
     """
 
     id: str
@@ -25,6 +27,7 @@ class Collection(Entity):
     verified: bool = False
     created_at: datetime | None = None
     items_count: int = 0
+    royalty_bps: int = 0
     risk_score: Decimal | None = None
 
     def with_risk_score(self, score: Decimal) -> Collection:
@@ -36,5 +39,6 @@ class Collection(Entity):
             verified=self.verified,
             created_at=self.created_at,
             items_count=self.items_count,
+            royalty_bps=self.royalty_bps,
             risk_score=score,
         )

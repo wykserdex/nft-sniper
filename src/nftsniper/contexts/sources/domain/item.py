@@ -42,6 +42,9 @@ class Item(Entity):
 
     ``rarity_rank`` — перцентиль редкости в коллекции (0..1, меньше = реже);
     ``rarity_score`` — нормированный скор (0..1), вычисляемый.
+    ``media_url`` — ссылка на медиа (изображение/контент), заполняется
+    адаптером источника; используется risk-проверкой доступности медиа
+    (ТЗ §4). None, если неизвестна.
     """
 
     id: str
@@ -51,3 +54,4 @@ class Item(Entity):
     traits: TraitSet = TraitSet(traits=())
     rarity_rank: Decimal | None = None
     rarity_score: Decimal | None = None
+    media_url: str | None = None

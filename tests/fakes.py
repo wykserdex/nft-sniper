@@ -7,7 +7,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import datetime
 from decimal import Decimal
 
@@ -328,3 +328,27 @@ class InMemoryValuationRepository:
 
     async def get_by_listing(self, listing_id: str) -> FairPriceEstimate | None:
         return self._data.get(listing_id)
+
+
+class FakeCollectionCatalog:
+    """CollectionCatalogPort в памяти: имена известных коллекций."""
+
+    def __init__(self, names: Sequence[str] = ()) -> None:
+        self.names = list(names)
+        self.calls = 0
+
+    async def known_collections(self) -> Sequence[str]:
+        self.calls += 1
+        return list(self.names)
+
+
+class FakeMediaPort:
+    """MediaPort в памяти: доступность по словарю url → bool."""
+
+    def __init__(self, availability: Mapping[str, bool] | None = None) -> None:
+        self.availability: dict[str, bool] = dict(availability or {})
+        self.calls: list[str] = []
+
+    async def is_available(self, url: str) -> bool:
+        self.calls.append(url)
+        return self.availability.get(url, False)

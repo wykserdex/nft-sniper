@@ -20,6 +20,8 @@ from nftsniper.infrastructure.http.circuit_breaker import (
 RETRYABLE_STATUS = frozenset({429, 500, 502, 503, 504})
 _MAX_BACKOFF_SECONDS = 30.0
 _CLIENT_ERROR_MIN_STATUS = 400
+_METHOD_NOT_ALLOWED = 405
+_NOT_IMPLEMENTED = 501
 
 
 class HttpError(RuntimeError):
@@ -85,6 +87,21 @@ class ResilientHttpClient:
     async def get_text(self, url: str, **kwargs: Any) -> str:
         response = await self._request("GET", url, **kwargs)
         return response.text
+
+    async def is_reachable(self, url: str, **kwargs: Any) -> bool:
+        """HEAD-запрос: True, если ресурс доступен (2xx/3xx).
+
+        405/501 (HEAD не поддержан сервером) трактуются как «ресурс есть».
+        Транспортные ошибки, 4xx/5xx и открытый breaker → False. Используется
+        risk-проверкой доступности медиа.
+        """
+        try:
+            await self._request("HEAD", url, **kwargs)
+        except HttpError as exc:
+            return exc.status_code in (_METHOD_NOT_ALLOWED, _NOT_IMPLEMENTED)
+        except CircuitBreakerOpenError:
+            return False
+        return True
 
     async def _request(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
         async def attempt() -> httpx.Response:
