@@ -165,7 +165,7 @@ nft-sniper/
 | 9 | Alert Engine (матчинг с настройками, дедуп, rate limit, quiet hours, приоритизация «лучшие сделки первыми», ограниченная очередь при всплеске; `AlertEngine` + `RecordDecision`) | ✅ |
 | 10 | Telegram Bot (aiogram 3): /start /settings (FSM) /watchlist /stats /mute /pause, рендер алерта по ТЗ §1, кнопки-решения, локализация RU/EN, TelegramNotifier | ✅ |
 | 11 | Feedback Loop & Analytics (трекинг исходов 1h/24h/7d, precision/take rate/hit rate, контрфактуал «если бы взяли всё», персональная рекомендация порога min_discount) | ✅ |
-| 12 | Observability & Backtest | ⬜ |
+| 12 | Observability & Backtest (полный каталог метрик: latency по этапам, очереди, rate limit, ошибки источников; алерты деградации `check_degradation`; гейт изменения модели `compare_models` — сравнимый отчёт и вердикт PROMOTE/REJECT) | ✅ |
 
 **Фазы** (ТЗ §8): 1) MVP — 1,2,3,6,10 + упрощённая оценка; 2) качество — 4,7,8;
 3) масштаб — 5,9,11; 4) зрелость — 12, портфель/PnL, бэктест как gate.

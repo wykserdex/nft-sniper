@@ -11,6 +11,11 @@ from nftsniper.contexts.valuation.application.estimate_fair_price import (
     ScoredListing,
     ScoreListing,
 )
+from nftsniper.contexts.valuation.application.model_gate import (
+    DEFAULT_REGRESSION_TOLERANCE,
+    ModelComparisonReport,
+    compare_models,
+)
 from nftsniper.contexts.valuation.application.rebuild_stats import (
     RebuildStats,
     RebuildStatsResult,
@@ -18,12 +23,15 @@ from nftsniper.contexts.valuation.application.rebuild_stats import (
 
 __all__ = [
     "DEFAULT_ERROR_THRESHOLD",
+    "DEFAULT_REGRESSION_TOLERANCE",
     "BacktestReport",
     "EstimateFairPrice",
+    "ModelComparisonReport",
     "RebuildStats",
     "RebuildStatsResult",
     "ScoreListing",
     "ScoredListing",
+    "compare_models",
     "median_error",
     "run_backtest",
 ]
